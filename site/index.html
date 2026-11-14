@@ -110,6 +110,7 @@ a{color:var(--brand2)}button{font:inherit}img{max-width:100%}
     <aside class="panel mapwrap">
       <div class="maphead"><div><h3>選択中の区間地図</h3><p>カードを選ぶと道路に沿う経路を表示</p></div></div>
       <label class="segment-picker-label" for="segment-picker">移動する区間を選択</label><select id="segment-picker" aria-label="移動区間の選択"></select>
+      <div id="bus-walk-picker" hidden><label class="segment-picker-label" for="bus-walk-select">ナビする徒歩区間</label><select id="bus-walk-select"><option value="0">乗車前：ekie → 広島駅バス停</option><option value="1">降車後：本川町バス停 → 平和資料館</option></select><p class="nav-explanation">バス移動は紫色で表示します。徒歩ナビは乗車前・降車後を選んで使えます。</p></div>
       <div id="nav-panel" aria-label="手動で現在地を選ぶ案内"></div>
       <div id="map" aria-label="道路に沿う区間地図"></div>
       <div class="mapmeta">
@@ -143,7 +144,7 @@ for (const id of ['2','3']) {
 }
 let currentGroup = '1';
 let currentSeg = 0;
-let map, routeLayer, markerLayer, minimaps = new Map();
+let map, routeLayer, markerLayer, busNavLayer, minimaps = new Map();
 
 function gmapsDir(fromId,toId,mode){
   const f = PLACES[fromId], t = PLACES[toId];
@@ -163,6 +164,7 @@ function initMap(){
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {maxZoom: 19, attribution:'© OpenStreetMap contributors'}).addTo(map);
   routeLayer = L.layerGroup().addTo(map);
   markerLayer = L.layerGroup().addTo(map);
+  busNavLayer = L.layerGroup().addTo(map);
 }
 let routeToken=0;
 function renderDirections(lines){
@@ -181,6 +183,8 @@ function paintRoadRoute(target,route,stroke){
 async function drawSegmentOnMap(seg){
  const seq=++routeToken, from=PLACES[seg.from],to=PLACES[seg.to];
  FieldworkNavigator.reset(seg,map,routeLayer);
+ document.getElementById('bus-walk-picker').hidden=!seg.bus;
+ if(busNavLayer)busNavLayer.clearLayers();
  document.getElementById('mapSegTitle').textContent=seg.label;
  document.getElementById('mapSegMeta').textContent=`出発：${from.name} ／ 到着：${to.name}`;
  document.getElementById('mapSegVerify').textContent=seg.verify;
@@ -206,7 +210,7 @@ async function drawSegmentOnMap(seg){
    if(bounds)map.fitBounds(bounds.pad(.2),{maxZoom:17});
    const mini=minimaps.get('mini-'+currentGroup+'-'+currentSeg);
    if(mini && bounds)paintRoadRoute(mini,busRoute,4);
-   FieldworkNavigator.unavailable('この区間はバスと徒歩を含みます。緑は徒歩、紫はバスの参考経路です。歩行可能か現地で確認してください。');
+   document.getElementById('bus-walk-select').value='0';
    loadBusWalks(seq);
    return;
  }
@@ -245,6 +249,16 @@ async function loadBusWalks(seq){
    }
  });
  if(info)info.textContent=results.map((r,i)=>BUS_WALKS[i].label+'：'+(r?.type==='walking'?'歩行者経路を表示':'経路を取得できません。Googleマップで確認してください')).join(' ／ ');
+ const picker=document.getElementById('bus-walk-select');
+ function selectWalk(){
+   if(seq!==routeToken)return;
+   const i=Number(picker.value), route=results[i];
+   busNavLayer.clearLayers();
+   if(route?.type==='walking') FieldworkNavigator.setRoute(BUS_WALKS[i],route,map,busNavLayer);
+   else FieldworkNavigator.unavailable('選択した徒歩経路を取得できませんでした。Googleマップで確認してください。');
+ }
+ picker.onchange=selectWalk;
+ selectWalk();
 }
 function createMiniMap(elId,seg){
  const el=document.getElementById(elId);if(!el)return;
@@ -342,10 +356,10 @@ document.getElementById('nav-close').addEventListener('click',()=>document.getEl
 document.getElementById('nav-dialog').addEventListener('close',()=>{
   routeToken++;
   FieldworkNavigator.reset(null,map,routeLayer);
+  if(busNavLayer)busNavLayer.clearLayers();
   document.querySelector(`.nav-open[data-nav-open="${currentSeg}"]`)?.focus();
 });
 renderSegments();
 </script>
 </body>
 </html>
-

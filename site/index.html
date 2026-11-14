@@ -118,6 +118,10 @@ let map, routeLayer, markerLayer, minimaps = new Map();
 
 function gmapsDir(fromId,toId,mode){
   const f = PLACES[fromId], t = PLACES[toId];
+  if (f.lat === t.lat && f.lng === t.lng) {
+    const params = new URLSearchParams({api:'1', origin:f.name+' '+f.address, destination:t.name+' '+t.address, travelmode:mode==='transit'?'transit':'walking'});
+    return 'https://www.google.com/maps/dir/?'+params.toString();
+  }
   return `https://www.google.com/maps/dir/?api=1&origin=${f.lat},${f.lng}&destination=${t.lat},${t.lng}&travelmode=${mode==='transit'?'transit':'walking'}`;
 }
 function escapeHtml(s){return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}

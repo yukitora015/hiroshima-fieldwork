@@ -6,7 +6,7 @@
   const WIDTH = 360, HEIGHT = 300, ORIGIN_X = 180, ORIGIN_Y = 200;
   const PX_PER_METRE = 1.4;
   const DEG = Math.PI / 180;
-  let landmarks = [], loaded = false, loadPromise = null;
+  let landmarks = [], loaded = false, loadPromise = null, context = null;
   let generation = 0, lastSlice = null, lastTurns = [];
 
   function bearing(a, b) {
@@ -63,6 +63,45 @@
       `<polyline points="${coords}" fill="none" stroke="${stroke}" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>`;
   }
 
+  // Every background geometry comes from the bounded OSM extract. Ways and
+  // closed areas are projected by the same transform as the walking route.
+  function backgroundLayer(data, center, travelBearing) {
+    if (!inCoverage(data,center)) return '';
+    const items = data.features.filter(f => f && Array.isArray(f.points) && f.points.length >= 2 &&
+      Array.isArray(f.bounds) && f.bounds[0] <= center[0]+0.002 && f.bounds[2] >= center[0]-0.002 &&
+      f.bounds[1] <= center[1]+0.0025 && f.bounds[3] >= center[1]-0.0025);
+    const parts=[];
+    for (const kind of ['water','green','building','road']) {
+      for (const f of items) {
+        if (f.kind !== kind) continue;
+        const coords=shape(f.points,center,travelBearing);
+        if(kind==='road') {
+          const minor=['footway','path','steps','pedestrian','cycleway'].includes(f.subtype);
+          parts.push(`<polyline class="context-road" points="${coords}" fill="none" stroke="#d6a35e" stroke-width="${minor?4:9}" stroke-linecap="round" stroke-linejoin="round"/>`);
+          parts.push(`<polyline points="${coords}" fill="none" stroke="${minor?'#f2e5c6':'#f8edcf'}" stroke-width="${minor?2:5}" stroke-linecap="round" stroke-linejoin="round"/>`);
+        } else {
+          const color={water:'#b8d5e8',green:'#d4e6bd',building:'#cdc8b5'}[kind];
+          parts.push(`<polygon class="context-${kind}" points="${coords}" fill="${color}" stroke="${color}" stroke-width="1"/>`);
+        }
+      }
+    }
+    return parts.join('');
+  }
+
+  function inCoverage(data,point) {
+    const b=data?.bounds;
+    return Array.isArray(data?.features) && Array.isArray(b) && b.length===4 &&
+      point[0]>=b[0] && point[0]<=b[2] && point[1]>=b[1] && point[1]<=b[3];
+  }
+
+  function destinationPin(slice, travelBearing) {
+    const destination = slice.future[slice.future.length-1];
+    if (!destination || distance(slice.point,destination)>115) return '';
+    const [x,y] = project(destination,slice.point,travelBearing);
+    if (x<15 || x>WIDTH-15 || y<40 || y>HEIGHT-15) return '';
+    return `<g class="destination-pin"><circle cx="${fixed(x)}" cy="${fixed(y)}" r="8" fill="#cf4038" stroke="#fff" stroke-width="3"/><title>区間の目的地</title></g>`;
+  }
+
   function turnDots(turns, slice, travelBearing) {
     const parts = [];
     for (const turn of turns || []) {
@@ -107,21 +146,23 @@
   }
 
   // Pure function for reproducible unit tests and server-side previews.
-  function renderSvg(slice, turns = [], landmarksData = []) {
+  function renderSvg(slice, turns = [], landmarksData = [], contextData = null) {
     if (!slice || !Array.isArray(slice.point) || !Array.isArray(slice.past) || !Array.isArray(slice.future)) return '';
     const travelBearing = heading(slice);
     if (travelBearing === null) return '<p class="schematic-unavailable">進行方向を確認できないため局所図を表示できません。</p>';
     const past = routeLayer(slice.past, slice.point, travelBearing, '#9caaa2');
     const future = routeLayer(slice.future, slice.point, travelBearing, '#087e64');
     const landmarksHtml = verifiedLandmarks(landmarksData, slice, travelBearing);
+    const background = backgroundLayer(contextData, slice.point, travelBearing);
+    const destination = destinationPin(slice, travelBearing);
     const dots = turnDots(turns, slice, travelBearing);
     // All text lives in the unrotated SVG coordinate space.
     return `<svg class="nav-schematic" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${WIDTH} ${HEIGHT}" preserveAspectRatio="xMidYMid meet" role="img" aria-label="選択地点周辺の実際の歩行ルートを簡略化した図。進行方向が上。現在地は手動選択。">
       <defs><clipPath id="nav-schematic-clip"><rect x="0" y="0" width="${WIDTH}" height="${HEIGHT}" rx="14"/></clipPath></defs>
-      <rect width="${WIDTH}" height="${HEIGHT}" fill="#edf4ed" rx="14"/>
-      <g clip-path="url(#nav-schematic-clip)">${past}${future}${dots}${landmarksHtml}</g>
-      <circle cx="${ORIGIN_X}" cy="${ORIGIN_Y}" r="13" fill="#ffffff" stroke="#0d6f59" stroke-width="3"/>
-      <circle cx="${ORIGIN_X}" cy="${ORIGIN_Y}" r="6.5" fill="#0d6f59"/>
+      <rect width="${WIDTH}" height="${HEIGHT}" fill="#f6f0d9" rx="14"/>
+      <g clip-path="url(#nav-schematic-clip)">${background}${past}${future}${dots}${destination}${landmarksHtml}</g>
+      <circle cx="${ORIGIN_X}" cy="${ORIGIN_Y}" r="13" fill="#ffffff" stroke="#bf4038" stroke-width="3"/>
+      <path d="M ${ORIGIN_X} ${ORIGIN_Y-9} l -6 15 6 -3 6 3 Z" fill="#d6493e"/>
       <rect x="125" y="8" rx="14" width="110" height="27" fill="#ffffff" stroke="#c9dbcc"/>
       <text x="180" y="26" text-anchor="middle" font-size="12" font-weight="800" fill="#125943">進行方向 ↑</text>
       <rect x="9" y="266" rx="8" width="125" height="25" fill="#ffffff" opacity=".96"/>
@@ -136,10 +177,10 @@
   function loadLandmarks() {
     if (loaded) return Promise.resolve(landmarks);
     if (loadPromise) return loadPromise;
-    loadPromise = fetch('data/landmarks.json')
-      .then(r => { if (!r.ok) throw new Error('landmarks unavailable'); return r.json(); })
-      .then(data => { landmarks = Array.isArray(data) ? data : []; })
-      .catch(() => { landmarks = []; })
+    loadPromise = Promise.all([fetch('data/landmarks.json'),fetch('data/context.json?v=1')])
+      .then(async ([a,b]) => {if(!a.ok || !b.ok)throw new Error('map data unavailable'); return [await a.json(),await b.json()];})
+      .then(([data,geo]) => { if(!geo || !Array.isArray(geo.features))throw new Error('invalid map data'); context=geo; landmarks = (Array.isArray(data) ? data : []).concat(Array.isArray(geo.landmarks)?geo.landmarks:[]); })
+      .catch(() => { landmarks = []; context=null; })
       .then(() => { loaded = true; return landmarks; });
     return loadPromise;
   }
@@ -156,10 +197,11 @@
     const outer = document.getElementById('local-map');
     const seq = ++generation;
     if (!outer) return;
-    outer.innerHTML = renderSvg(slice, turns, landmarks);
+    outer.innerHTML = renderSvg(slice, turns, landmarks, context);
     await loadLandmarks();
     if (seq !== generation || document.getElementById('local-map') !== outer) return;
-    outer.innerHTML = renderSvg(slice, turns, landmarks);
+    outer.innerHTML = renderSvg(slice, turns, landmarks, context);
+    if (!inCoverage(context,slice.point)) outer.insertAdjacentHTML('beforeend','<p class="context-unavailable">周辺道路データを表示できません。下の通常地図で確認してください。</p>');
   }
 
   window.FieldworkLocalMap = Object.freeze({

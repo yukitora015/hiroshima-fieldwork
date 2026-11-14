@@ -178,7 +178,7 @@
         <div class="nav-picture" id="local-map" aria-label="進行方向を上にした周辺地図"></div>
         <div class="nav-instruction"><p class="nav-mini-title" id="nav-counter"></p><strong id="nav-action"></strong><span id="nav-distance"></span><span class="nav-current-point" id="nav-current-point"></span></div>
       </div>
-      <p class="nav-diagram-caption">上の図は道路データの歩行ルートを図式化し、進行方向を上にしています。目印の文字は正立表示です。周辺のすべての道は表示しません。</p>
+      <p class="nav-diagram-caption">上の図は OpenStreetMap の周辺地物と歩行ルートを表示し、進行方向を上にしています。情報は取得時点のもので、通行可否は現地で確認してください。</p>
       <div class="nav-buttons"><button type="button" id="nav-prev">← 前の地点</button><button type="button" class="nav-primary" id="nav-next">次の地点 →</button><button type="button" id="nav-all">全区間を見る</button></div>
       <div class="nav-step-scroll" id="nav-step-scroll" aria-label="曲がり角の位置を選択"></div>
       <div class="nav-route-legend"><span><i class="nav-legend-dot"></i>選択地点</span><span><i class="nav-legend-line green"></i>これから進む道</span><span><i class="nav-legend-line gray"></i>通過した道</span></div>

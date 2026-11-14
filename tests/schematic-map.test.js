@@ -22,4 +22,13 @@ assert.ok(svg.includes('#9caaa2') && svg.includes('#087e64'));
 svg=m.renderSvg(slice,[],[{...landmark,name:'<script>alert(1)</script>'}]);
 assert.ok(!svg.includes('<script>') && svg.includes('&lt;script&gt;'),'OSM text must be escaped');
 assert.ok(!m.renderSvg(null), 'invalid route is never replaced with a fake line');
+const background={bounds:[34.38,132.44,34.41,132.48],features:[
+  {kind:'road',subtype:'residential',bounds:[center[0],center[1],center[0]+.0004,center[1]+.00045],points:[n,center,e]},
+  {kind:'building',bounds:[center[0],center[1],center[0]+.0004,center[1]+.00045],points:[center,n,e,center]},
+  {kind:'water',bounds:[center[0],center[1],center[0]+.0004,center[1]+.00045],points:[center,n,e,center]},
+  {kind:'green',bounds:[center[0],center[1],center[0]+.0004,center[1]+.00045],points:[center,n,e,center]}
+]};
+svg=m.renderSvg(slice,[],[landmark],background);
+for(const kind of ['road','building','water','green']) assert.ok(svg.includes('context-'+kind),kind);
+assert.ok(svg.includes('destination-pin'));
 console.log('PASS: directions up, projected landmark locations, upright text, safe HTML, no fake fallback');

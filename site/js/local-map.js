@@ -230,14 +230,14 @@
     const bounds=[Math.min(...lats)-.001,Math.min(...lons)-.001,Math.max(...lats)+.001,Math.max(...lons)+.001];
     const features=(data?.features||[]).filter(f=>Array.isArray(f.points)&&f.points.length>=2&&Array.isArray(f.bounds)&&f.bounds[0]<=bounds[2]&&f.bounds[2]>=bounds[0]&&f.bounds[1]<=bounds[3]&&f.bounds[3]>=bounds[1]);
     const background=[];
-    for(const kind of ['water','green','building','road'])for(const f of features){
-      if(f.kind!==kind)continue;
+    for(const kind of ['water','green','road'])for(const f of features){
+      if(f.kind!==kind || (kind==='road' && !['trunk','primary','primary_link','secondary','tertiary'].includes(f.subtype)))continue;
       const coords=points(f.points);
       if(kind==='road') background.push(`<polyline points="${coords}" fill="none" stroke="#d6a35e" stroke-width="2" stroke-linecap="round"/>`);
       else {const color={water:'#b8d5e8',green:'#d4e6bd',building:'#cdc8b5'}[kind];background.push(`<polygon points="${coords}" fill="${color}"/>`);}
     }
     const stopMarks=stops.map(stop=>{const [x,y]=convert(stop.point);const labelX=Math.min(275,Math.max(8,x-30));const labelY=Math.min(275,Math.max(28,y-16));return `<circle cx="${fixed(x)}" cy="${fixed(y)}" r="6" fill="#d34438" stroke="#fff" stroke-width="2"/><rect x="${fixed(labelX)}" y="${fixed(labelY-14)}" width="78" height="19" rx="7" fill="#fff"/><text x="${fixed(labelX+5)}" y="${fixed(labelY)}" font-size="10" font-weight="700" fill="#40332a">${escapeText(stop.name)}</text>`;}).join('');
-    return `<svg class="nav-schematic" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 300" role="img" aria-label="広島駅から本川町までのバスの経路を示す図式地図。現在位置の表示ではありません。"><defs><clipPath id="bus-schematic-clip"><rect width="360" height="300" rx="14"/></clipPath></defs><rect width="360" height="300" rx="14" fill="#f6f0d9"/><g clip-path="url(#bus-schematic-clip)">${background.join('')}<polyline points="${points(path)}" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><polyline points="${points(path)}" fill="none" stroke="#7652b5" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>${stopMarks}</g><rect x="94" y="7" width="172" height="24" rx="12" fill="#fff"/><text x="180" y="23" text-anchor="middle" font-size="11" font-weight="700" fill="#503a78">バス経路（位置追跡なし）</text></svg>`;
+    return `<svg class="nav-schematic" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 300" role="img" aria-label="広島駅から本川町までのバスの経路を示す図式地図。現在位置の表示ではありません。"><defs><clipPath id="bus-schematic-clip"><rect width="360" height="300" rx="14"/></clipPath></defs><rect width="360" height="300" rx="14" fill="#f6f0d9"/><g clip-path="url(#bus-schematic-clip)">${background.join('')}<polyline points="${points(path)}" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><polyline points="${points(path)}" fill="none" stroke="#7652b5" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>${stopMarks}</g></svg>`;
   }
   async function updateBus(path, stops) {
     const outer=document.getElementById('bus-schematic');

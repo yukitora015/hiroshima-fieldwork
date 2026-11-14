@@ -156,7 +156,7 @@
     host.innerHTML = `<div class="nav-shell nav-offline"><p class="nav-overline">この区間の案内</p><h3>地点選択は利用できません</h3><p>${escape(message || '曲がり角の位置を取得できませんでした。')}</p><p class="nav-disclaimer">道路の線を推測して描くことはしません。区間の「Googleマップで実際の経路を確認」をご利用ください。</p></div>`;
   }
 
-  function setRoute(segment, route, map, routeLayer) {
+  function setRoute(segment, route, map, routeLayer, onPointSelect) {
     if (state.segment !== segment || state.map !== map || state.routeLayer !== routeLayer) reset(segment, map, routeLayer);
     if (route.type !== 'walking') return unavailable('駅構内・路面電車区間では、正確な通路・線路と交差点の位置を取得できていません。');
     if (!Array.isArray(route.paths?.[0]) || route.paths[0].length < 2 || !Array.isArray(route.maneuvers) || route.maneuvers.length < 2) {
@@ -207,7 +207,7 @@
           fillColor: '#36846f', fillOpacity: .88 })
           .addTo(state.turnMarkers)
           .bindTooltip(String(i + 1) + '. ' + roadAction(point), { direction: 'top' })
-          .on('click', () => selectPoint(i));
+          .on('click', () => onPointSelect ? onPointSelect(i) : selectPoint(i));
       });
     }
     selectPoint(0);

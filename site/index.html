@@ -110,7 +110,6 @@ a{color:var(--brand2)}button{font:inherit}img{max-width:100%}
     <aside class="panel mapwrap">
       <div class="maphead"><div><h3>選択中の区間地図</h3><p>カードを選ぶと道路に沿う経路を表示</p></div></div>
       <label class="segment-picker-label" for="segment-picker">移動する区間を選択</label><select id="segment-picker" aria-label="移動区間の選択"></select>
-      <div id="bus-walk-picker" hidden><label class="segment-picker-label" for="bus-walk-select">ナビする徒歩区間</label><select id="bus-walk-select"><option value="0">乗車前：ekie → 広島駅バス停</option><option value="1">降車後：本川町バス停 → 平和資料館</option></select><p class="nav-explanation">バス移動は紫色で表示します。徒歩ナビは乗車前・降車後を選んで使えます。</p></div>
       <div id="nav-panel" aria-label="手動で現在地を選ぶ案内"></div>
       <div id="map" aria-label="道路に沿う区間地図"></div>
       <div class="mapmeta">
@@ -125,7 +124,7 @@ a{color:var(--brand2)}button{font:inherit}img{max-width:100%}
 <script src="js/route-engine.js?v=2"></script>
 <script src="js/bus-route.js"></script>
 <script src="js/local-map.js?v=8"></script>
-<script src="js/nav-guide.js?v=6"></script>
+<script src="js/nav-guide.js?v=7"></script>
 <script>
 const PLACES = {"station":{"name":"広島駅","lat":34.3976198,"lng":132.4753631,"address":"広島県広島市南区松原町2","official":"https://www.jr-odekake.net/eki/top?id=0800605"},"fukuya":{"name":"福屋八丁堀本店","lat":34.3935097,"lng":132.4626307,"address":"広島県広島市中区胡町6-26","official":"https://www.fukuya-dept.co.jp/honten/access/"},"shukkeien":{"name":"縮景園","lat":34.4003492,"lng":132.4671298,"address":"広島県広島市中区上幟町2-11","official":"https://shukkeien.jp/access/"},"prefecture":{"name":"広島県庁","lat":34.3965192,"lng":132.459676,"address":"広島県広島市中区基町10-52","official":"https://www.pref.hiroshima.lg.jp/site/accesschousyarenrakusaki/"},"hondori":{"name":"本通り（本通エリア）","lat":34.3935628,"lng":132.4571519,"address":"広島県広島市中区本通周辺","official":"https://www.hondori.or.jp/"},"benbee":{"name":"弁兵衛 大手町店","lat":34.39191096,"lng":132.45615167,"address":"広島県広島市中区大手町2-7-7 1F","official":"https://hiroshima-benbe-ootemachi.owst.jp/"},"reference":{"name":"リファレンス広島小町ビル","lat":34.3891032,"lng":132.4559812,"address":"広島県広島市中区小町3-19","official":"https://re-rental.com/hiroshima/access/"},"cake":{"name":"バッケンモーツァルト CAKE & CAFE 松原町","lat":34.397879,"lng":132.4757374,"address":"広島県広島市南区松原町1-2（ekie内）","official":"https://www.b-mozart.co.jp/?mode=f6"},"omiyage":{"name":"おみやげ街道 エキエ広島","lat":34.397879,"lng":132.4757374,"address":"広島県広島市南区松原町1-2（ekie内）","official":"https://www.sn-hiroshima.co.jp/pages/137/"},"snacks":{"name":"駅付近（土産・軽食）","lat":34.397879,"lng":132.4757374,"address":"広島駅 ekie 周辺","official":"https://www.ekie.jp/"},"museum":{"name":"本川小学校平和資料館","lat":34.39588,"lng":132.45061,"address":"広島県広島市中区本川町1-5-39","official":"https://www.city.hiroshima.lg.jp/atomicbomb-peace/fukko/1021101/1026920/1026921/1020868.html"},"school":{"name":"本川小学校","lat":34.396251,"lng":132.4503758,"address":"広島県広島市中区本川町1-5-39","official":"https://cms.edu.city.hiroshima.jp/weblog/index.php?id=e0899"}};
 const GROUPS = {"1":{"title":"グループ1","summary":"福屋八丁堀本店と縮景園を経由し、15:00ごろ広島県庁でグループ2と合流。その後は本通り→弁兵衛→リファレンス広島小町ビルへ。","segments":[{"from":"station","to":"fukuya","mode":"walking","label":"広島駅 → 福屋八丁堀本店","eta":"所要時間は経路サービスで確認","verify":"歩行者経路・施設入口・交通状況は当日ご確認ください。","landmarks":[],"steps":["移動する直前に地図アプリで道順を確認してください。"]},{"from":"fukuya","to":"shukkeien","mode":"walking","label":"福屋八丁堀本店 → 縮景園","eta":"所要時間は経路サービスで確認","verify":"歩行者経路・施設入口・交通状況は当日ご確認ください。","landmarks":[],"steps":["移動する直前に地図アプリで道順を確認してください。"]},{"from":"shukkeien","to":"prefecture","mode":"walking","label":"縮景園 → 広島県庁","eta":"所要時間は経路サービスで確認","verify":"歩行者経路・施設入口・交通状況は当日ご確認ください。","landmarks":[],"steps":["移動する直前に地図アプリで道順を確認してください。"]},{"from":"prefecture","to":"hondori","mode":"walking","label":"広島県庁 → 本通り","eta":"所要時間は経路サービスで確認","verify":"歩行者経路・施設入口・交通状況は当日ご確認ください。","landmarks":[],"steps":["移動する直前に地図アプリで道順を確認してください。"]},{"from":"hondori","to":"benbee","mode":"walking","label":"本通り → 弁兵衛 大手町店","eta":"所要時間は経路サービスで確認","verify":"歩行者経路・施設入口・交通状況は当日ご確認ください。","landmarks":[],"steps":["移動する直前に地図アプリで道順を確認してください。"]},{"from":"benbee","to":"reference","mode":"walking","label":"弁兵衛 大手町店 → リファレンス広島小町ビル","eta":"所要時間は経路サービスで確認","verify":"歩行者経路・施設入口・交通状況は当日ご確認ください。","landmarks":[],"steps":["移動する直前に地図アプリで道順を確認してください。"]}]},"2":{"title":"グループ2","summary":"広島駅周辺（ekie）で立ち寄り後、本川小学校平和資料館へ。15:00ごろ広島県庁でグループ1と合流し、その後は本通り→弁兵衛→リファレンス広島小町ビルへ。","segments":[{"from":"station","to":"cake","mode":"walking","label":"広島駅 → バッケンモーツァルト CAKE & CAFE 松原町","eta":"所要時間は経路サービスで確認","verify":"歩行者経路・施設入口・交通状況は当日ご確認ください。","landmarks":[],"steps":["移動する直前に地図アプリで道順を確認してください。"]},{"from":"cake","to":"omiyage","mode":"walking","label":"バッケンモーツァルト → おみやげ街道 エキエ広島","eta":"所要時間は経路サービスで確認","verify":"歩行者経路・施設入口・交通状況は当日ご確認ください。","landmarks":[],"steps":["移動する直前に地図アプリで道順を確認してください。"]},{"from":"omiyage","to":"museum","mode":"transit","label":"おみやげ街道 → 本川小学校平和資料館","eta":"所要時間は経路サービスで確認","verify":"歩行者経路・施設入口・交通状況は当日ご確認ください。","landmarks":[],"steps":["移動する直前に地図アプリで道順を確認してください。"]},{"from":"museum","to":"prefecture","mode":"walking","label":"本川小学校平和資料館 → 広島県庁","eta":"所要時間は経路サービスで確認","verify":"歩行者経路・施設入口・交通状況は当日ご確認ください。","landmarks":[],"steps":["移動する直前に地図アプリで道順を確認してください。"]},{"from":"prefecture","to":"hondori","mode":"walking","label":"広島県庁 → 本通り","eta":"所要時間は経路サービスで確認","verify":"歩行者経路・施設入口・交通状況は当日ご確認ください。","landmarks":[],"steps":["移動する直前に地図アプリで道順を確認してください。"]},{"from":"hondori","to":"benbee","mode":"walking","label":"本通り → 弁兵衛 大手町店","eta":"所要時間は経路サービスで確認","verify":"歩行者経路・施設入口・交通状況は当日ご確認ください。","landmarks":[],"steps":["移動する直前に地図アプリで道順を確認してください。"]},{"from":"benbee","to":"reference","mode":"walking","label":"弁兵衛 大手町店 → リファレンス広島小町ビル","eta":"所要時間は経路サービスで確認","verify":"歩行者経路・施設入口・交通状況は当日ご確認ください。","landmarks":[],"steps":["移動する直前に地図アプリで道順を確認してください。"]}]},"3":{"title":"グループ3","summary":"グループ2と一緒に、広島駅→バッケンモーツァルト→おみやげ街道→本川小学校平和資料館を訪問。その後、本川小学校で教頭先生との予定を終え、本通りで全員と合流します。","segments":[{"from":"station","to":"cake","mode":"walking","label":"広島駅 → バッケンモーツァルト CAKE & CAFE 松原町","eta":"所要時間は経路サービスで確認","verify":"歩行者経路・施設入口・交通状況は当日ご確認ください。","landmarks":[],"steps":["移動する直前に地図アプリで道順を確認してください。"]},{"from":"cake","to":"omiyage","mode":"walking","label":"バッケンモーツァルト → おみやげ街道 エキエ広島","eta":"所要時間は経路サービスで確認","verify":"歩行者経路・施設入口・交通状況は当日ご確認ください。","landmarks":[],"steps":["移動する直前に地図アプリで道順を確認してください。"]},{"from":"omiyage","to":"museum","mode":"transit","label":"おみやげ街道 → 本川小学校平和資料館","eta":"所要時間は経路サービスで確認","verify":"歩行者経路・施設入口・交通状況は当日ご確認ください。","landmarks":[],"steps":["移動する直前に地図アプリで道順を確認してください。"]},{"from":"museum","to":"school","mode":"walking","label":"本川小学校平和資料館 → 本川小学校","eta":"所要時間は経路サービスで確認","verify":"歩行者経路・施設入口・交通状況は当日ご確認ください。","landmarks":[],"steps":["移動する直前に地図アプリで道順を確認してください。"]},{"from":"school","to":"hondori","mode":"walking","label":"本川小学校 → 本通り","eta":"所要時間は経路サービスで確認","verify":"歩行者経路・施設入口・交通状況は当日ご確認ください。","landmarks":[],"steps":["移動する直前に地図アプリで道順を確認してください。"]},{"from":"hondori","to":"benbee","mode":"walking","label":"本通り → 弁兵衛 大手町店","eta":"所要時間は経路サービスで確認","verify":"歩行者経路・施設入口・交通状況は当日ご確認ください。","landmarks":[],"steps":["移動する直前に地図アプリで道順を確認してください。"]},{"from":"benbee","to":"reference","mode":"walking","label":"弁兵衛 大手町店 → リファレンス広島小町ビル","eta":"所要時間は経路サービスで確認","verify":"歩行者経路・施設入口・交通状況は当日ご確認ください。","landmarks":[],"steps":["移動する直前に地図アプリで道順を確認してください。"]}]}};
@@ -183,7 +182,6 @@ function paintRoadRoute(target,route,stroke){
 async function drawSegmentOnMap(seg){
  const seq=++routeToken, from=PLACES[seg.from],to=PLACES[seg.to];
  FieldworkNavigator.reset(seg,map,routeLayer);
- document.getElementById('bus-walk-picker').hidden=!seg.bus;
  if(busNavLayer)busNavLayer.clearLayers();
  document.getElementById('mapSegTitle').textContent=seg.label;
  document.getElementById('mapSegMeta').textContent=`出発：${from.name} ／ 到着：${to.name}`;
@@ -210,7 +208,6 @@ async function drawSegmentOnMap(seg){
    if(bounds)map.fitBounds(bounds.pad(.2),{maxZoom:17});
    const mini=minimaps.get('mini-'+currentGroup+'-'+currentSeg);
    if(mini && bounds)paintRoadRoute(mini,busRoute,4);
-   document.getElementById('bus-walk-select').value='0';
    loadBusWalks(seq);
    return;
  }
@@ -249,16 +246,58 @@ async function loadBusWalks(seq){
    }
  });
  if(info)info.textContent=results.map((r,i)=>BUS_WALKS[i].label+'：'+(r?.type==='walking'?'歩行者経路を表示':'経路を取得できません。Googleマップで確認してください')).join(' ／ ');
- const picker=document.getElementById('bus-walk-select');
- function selectWalk(){
+ startBusJourney(results,seq);
+}
+function startBusJourney(results,seq){
+ const steps=[];
+ results.forEach((route,leg)=>{
+   const valid=route?.type==='walking' && route.completeManeuvers && route.maneuvers?.length>=2 && route.maneuvers.every(m=>FieldworkNavigator.splitAt(route.paths?.[0],m.location));
+   if(valid){
+     const points=FieldworkNavigator.addStraightPoints(route.paths[0],route.maneuvers);
+     points.forEach((p,i)=>steps.push({leg,index:i,label:(leg===0&&i===points.length-1?'広島駅バス停・乗車':leg===1&&i===0?'本川町バス停・降車':FieldworkNavigator.roadAction(p))}));
+   }else steps.push({leg,unavailable:true,label:(leg===0?'乗車前':'降車後')+'の徒歩経路を確認'});
+   if(leg===0)steps.push({bus:true,label:'バス乗車中（広島駅 → 本川町）'});
+ });
+ let index=0;
+ function show(value){
    if(seq!==routeToken)return;
-   const i=Number(picker.value), route=results[i];
+   index=Math.max(0,Math.min(steps.length-1,value));
+   const step=steps[index], host=document.getElementById('nav-panel');
    busNavLayer.clearLayers();
-   if(route?.type==='walking') FieldworkNavigator.setRoute(BUS_WALKS[i],route,map,busNavLayer);
-   else FieldworkNavigator.unavailable('選択した徒歩経路を取得できませんでした。Googleマップで確認してください。');
+   if(step.bus || step.unavailable){
+     FieldworkNavigator.reset(null,map,busNavLayer);
+     const content=step.bus
+       ? '<h3>🚌 バス乗車中</h3><p>広島交通 71-1 平原線・広島文化学園行き</p><p>広島駅 → 八丁堀 → 立町 → 紙屋町 → <strong>本川町で降車</strong></p><p>地図の紫色はバスの参考経路です。現在位置は自動取得しません。</p><p>時刻・停留所・運行状況は当日確認してください。</p>'
+       : '<h3>徒歩経路を取得できません</h3><p>この部分は推測で案内しません。区間のGoogleマップで確認してください。</p>';
+     host.innerHTML='<section class="nav-shell"><div class="nav-label-row"><span class="nav-overline">手動ナビ</span><span class="nav-manual-badge">GPSは使用しません</span></div><label for="nav-position">今いる場所を選択</label><select id="nav-position"></select><div class="box">'+content+'</div><p id="nav-counter"></p><div class="nav-buttons"><button type="button" id="nav-prev">← 前の地点</button><button type="button" class="nav-primary" id="nav-next">次の地点 →</button><button type="button" id="nav-all">全区間を見る</button></div></section>';
+     document.getElementById('nav-counter').textContent=(index+1)+' / '+steps.length+' 地点';
+     const bounds=window.FIELDWORK_BUS_PATH?.length && L.latLngBounds(window.FIELDWORK_BUS_PATH);
+     if(bounds)map.fitBounds(bounds.pad(.2),{maxZoom:17});
+     document.getElementById('nav-all').onclick=()=>{if(bounds)map.fitBounds(bounds.pad(.2),{maxZoom:17});};
+   } else {
+     FieldworkNavigator.reset(BUS_WALKS[step.leg],map,busNavLayer);
+     FieldworkNavigator.setRoute(BUS_WALKS[step.leg],results[step.leg],map,busNavLayer,i=>{const target=steps.findIndex(x=>x.leg===step.leg && x.index===i);if(target>=0)show(target);});
+     FieldworkNavigator.selectPoint(step.index);
+     if(step.leg===0 && steps[index+1]?.bus){
+       document.getElementById('nav-action').textContent='広島駅バス停でバスに乗車';
+       document.getElementById('nav-current-point').textContent='選択地点：広島駅バス停';
+       document.getElementById('nav-distance').textContent='次はバス乗車中';
+     }
+     const scroll=document.getElementById('nav-step-scroll');
+     if(scroll)scroll.remove();
+   }
+   const old=document.getElementById('nav-position'), select=old.cloneNode(false);
+   old.replaceWith(select);
+   steps.forEach((item,i)=>{const opt=document.createElement('option');opt.value=String(i);opt.textContent=(i+1)+'. '+item.label;select.appendChild(opt);});
+   select.value=String(index);select.addEventListener('change',()=>show(Number(select.value)));
+   for(const [id,delta] of [['nav-prev',-1],['nav-next',1]]){
+     const oldButton=document.getElementById(id),button=oldButton.cloneNode(true);oldButton.replaceWith(button);
+     button.disabled=delta<0?index===0:index===steps.length-1;
+     button.addEventListener('click',()=>show(index+delta));
+   }
+   const counter=document.getElementById('nav-counter');if(counter)counter.textContent=(index+1)+' / '+steps.length+' 地点';
  }
- picker.onchange=selectWalk;
- selectWalk();
+ show(0);
 }
 function createMiniMap(elId,seg){
  const el=document.getElementById(elId);if(!el)return;

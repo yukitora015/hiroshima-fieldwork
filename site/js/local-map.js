@@ -4,7 +4,7 @@
 (function () {
   'use strict';
   const WIDTH = 360, HEIGHT = 300, ORIGIN_X = 180, ORIGIN_Y = 200;
-  const PX_PER_METRE = 1.75;
+  const PX_PER_METRE = 1.925;
   const DEG = Math.PI / 180;
   let landmarks = [], loaded = false, loadPromise = null, context = null;
   let generation = 0, lastSlice = null, lastTurns = [];
@@ -167,10 +167,10 @@
       <text x="180" y="26" text-anchor="middle" font-size="12" font-weight="800" fill="#125943">進行方向 ↑</text>
       <rect x="9" y="266" rx="8" width="125" height="25" fill="#ffffff" opacity=".96"/>
       <text x="18" y="283" font-size="11" font-weight="700" fill="#245344">● 選択した現在地</text>
-      <line x1="260" y1="283" x2="330" y2="283" stroke="#436251" stroke-width="3"/>
-      <line x1="260" y1="278" x2="260" y2="288" stroke="#436251" stroke-width="2"/>
+      <line x1="253" y1="283" x2="330" y2="283" stroke="#436251" stroke-width="3"/>
+      <line x1="253" y1="278" x2="253" y2="288" stroke="#436251" stroke-width="2"/>
       <line x1="330" y1="278" x2="330" y2="288" stroke="#436251" stroke-width="2"/>
-      <text x="295" y="275" text-anchor="middle" font-size="10" fill="#345747">約40m</text>
+      <text x="291.5" y="275" text-anchor="middle" font-size="10" fill="#345747">約40m</text>
     </svg>`;
   }
 

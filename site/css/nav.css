@@ -1,6 +1,7 @@
 /* Manual position navigation, optimized for phone screens. */
 #nav-panel{margin:0 0 14px}
 .grid>*{min-width:0}
+.mapwrap{position:static}
 .nav-shell{background:#fff;border:1px solid #d6e2da;border-radius:18px;padding:14px 15px 15px;color:#21332d;box-shadow:0 5px 15px #122d2310}
 .nav-overline{font-size:11px;color:#246751;letter-spacing:.08em;font-weight:800;margin:0}
 .nav-label-row{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:8px}
@@ -9,7 +10,7 @@
 .nav-shell select{display:block;width:100%;min-height:48px;font:600 14px/1.5 'Noto Sans JP',sans-serif;color:#1e4237;background:#f5f9f6;border:1px solid #b4cdbf;border-radius:11px;padding:10px 14px;outline-offset:3px}
 .nav-explanation,.nav-disclaimer{font-size:11px;line-height:1.75;color:#687a70;margin:8px 0 0}
 .nav-main{display:grid;grid-template-columns:132px 1fr;gap:14px;align-items:center;margin:13px 0 3px}
-.nav-picture svg{width:100%;height:auto;display:block;max-height:150px}
+.nav-picture>svg{width:100%;height:auto;display:block;max-height:150px}
 .nav-instruction{min-width:0;display:flex;flex-direction:column;gap:4px}
 .nav-mini-title{font-weight:800;color:#377263;font-size:11px;margin:0}
 .nav-instruction strong{font-size:29px;font-weight:800;line-height:1.2;letter-spacing:-.04em;color:#1e584a;word-break:keep-all}
@@ -39,3 +40,12 @@
 .nav-legend-dot{width:9px;height:9px;display:inline-block;background:#0a8569;border:2px solid #fff;box-shadow:0 0 0 1px #0a8569;border-radius:50%}
 .nav-legend-line{display:inline-block;width:20px;border-top:4px solid #1d806a;border-radius:2px}
 .nav-legend-line.gray{border-color:#a9b6b0}
+
+.nav-main{grid-template-columns:minmax(0,1fr);}
+.nav-picture{width:100%;height:300px;position:relative;overflow:hidden;border-radius:14px;background:#e6eee8;isolation:isolate}
+.local-rotator{position:absolute;left:50%;top:50%;transform-origin:50% 50%}
+.local-leaflet{width:100%;height:100%;background:#e6eee8}
+.local-top,.local-credit{position:absolute;z-index:500;background:#fff;border-radius:5px;padding:3px 7px;font-size:11px;font-weight:700;color:#254c40;pointer-events:none}
+.local-top{top:6px;left:50%;transform:translateX(-50%)} .local-credit{bottom:4px;right:4px;font-size:9px}
+.local-landmark-wrapper{background:transparent;border:0}.local-landmark{display:block;white-space:nowrap;transform-origin:0 0;background:#fff;color:#442c13;border:1px solid #987c45;border-radius:4px;padding:2px 4px;font-size:10px;font-weight:700;max-width:100px;overflow:hidden;text-overflow:ellipsis}
+@media(max-width:640px){.nav-main{grid-template-columns:minmax(0,1fr)}.nav-picture{height:270px}}

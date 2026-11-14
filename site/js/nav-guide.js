@@ -85,7 +85,35 @@
     if (Math.sqrt(best.score) * 111195 > 40) return null;
     const past = path.slice(0, best.segment + 1).concat([best.projected]);
     const future = [best.projected].concat(path.slice(best.segment + 1));
-    return { past, future, point: best.projected };
+    return { past, future, point: best.projected, segment: best.segment };
+  }
+
+  // Insert sparse straight candidates on the returned route, never off its geometry.
+  function addStraightPoints(path, maneuvers) {
+    const cumulative=[0];
+    for(let i=1;i<path.length;i++) cumulative.push(cumulative[i-1]+FieldworkLocalMap.distance(path[i-1],path[i]));
+    const known=maneuvers.map(m=>{
+      const x=splitAt(path,m.location);
+      const dist=cumulative[x.segment]+FieldworkLocalMap.distance(path[x.segment],x.point);
+      return Object.assign({},m,{along:dist});
+    });
+    const generated=[];
+    function pointAt(d) {
+      let i=1; while(i<cumulative.length && cumulative[i]<d)i++;
+      if(i>=path.length || cumulative[i]===cumulative[i-1])return null;
+      const f=(d-cumulative[i-1])/(cumulative[i]-cumulative[i-1]);
+      return [path[i-1][0]+(path[i][0]-path[i-1][0])*f,path[i-1][1]+(path[i][1]-path[i-1][1])*f];
+    }
+    for(let d=40;d<cumulative[cumulative.length-1]-35;d+=30) {
+      if(known.some(x=>Math.abs(x.along-d)<30) || generated.some(x=>Math.abs(x.along-d)<100))continue;
+      const before=pointAt(d-12), center=pointAt(d), after=pointAt(d+12);
+      if(!before||!center||!after)continue;
+      const b1=FieldworkLocalMap.bearing(before,center),b2=FieldworkLocalMap.bearing(center,after);
+      if(Math.abs((b2-b1+540)%360-180)>20)continue;
+      generated.push({type:'continue',modifier:'straight',name:'',location:center,along:d});
+    }
+    const all=known.concat(generated).sort((a,b)=>a.along-b.along);
+    return all.map((x,i)=>Object.assign(x,{distance:i+1<all.length?Math.max(0,all[i+1].along-x.along):0}));
   }
 
   function removeMarker() {
@@ -101,6 +129,7 @@
   function clear() {
     removeMarker();
     removeTurnMarkers();
+    FieldworkLocalMap.reset();
     state.route = null;
     state.index = 0;
     state.segment = null;
@@ -120,6 +149,7 @@
   function unavailable(message) {
     removeMarker();
     removeTurnMarkers();
+    FieldworkLocalMap.reset();
     state.route = null;
     const host = byId('nav-panel');
     if (!host) return;
@@ -134,7 +164,8 @@
     }
     const good = route.maneuvers.filter(item => Array.isArray(item.location) && splitAt(route.paths[0], item.location));
     if (good.length < 2 || good.length !== route.maneuvers.length || !route.completeManeuvers) return unavailable('曲がり角の位置をすべて道路データに対応づけられませんでした。');
-    state.route = Object.assign({}, route, { maneuvers: good, completeTurns: good.length === route.maneuvers.length });
+    const candidates = addStraightPoints(route.paths[0], good);
+    state.route = Object.assign({}, route, { maneuvers: candidates, completeTurns: true });
     state.index = 0;
     const host = byId('nav-panel');
     if (!host) return;
@@ -144,17 +175,17 @@
       <select id="nav-position" aria-describedby="nav-explanation"></select>
       <p id="nav-explanation" class="nav-explanation">曲がり角や出発地点を選ぶと、地図がその場所に寄ります。実際の現在地を自動検知するものではありません。</p>
       <div class="nav-main">
-        <div class="nav-picture" id="nav-picture"></div>
+        <div class="nav-picture" id="local-map" aria-label="進行方向を上にした周辺地図"></div>
         <div class="nav-instruction"><p class="nav-mini-title" id="nav-counter"></p><strong id="nav-action"></strong><span id="nav-distance"></span><span class="nav-current-point" id="nav-current-point"></span></div>
       </div>
-      <p class="nav-diagram-caption">矢印は曲がる方向の模式図です。正確な道の形は地図上で確認してください。</p>
+      <p class="nav-diagram-caption">局所地図は進行方向が上です。地図の文字も回転します。経路や通行可否は現地で確認してください。</p>
       <div class="nav-buttons"><button type="button" id="nav-prev">← 前の地点</button><button type="button" class="nav-primary" id="nav-next">次の地点 →</button><button type="button" id="nav-all">全区間を見る</button></div>
       <div class="nav-step-scroll" id="nav-step-scroll" aria-label="曲がり角の位置を選択"></div>
       <div class="nav-route-legend"><span><i class="nav-legend-dot"></i>選択地点</span><span><i class="nav-legend-line green"></i>これから進む道</span><span><i class="nav-legend-line gray"></i>通過した道</span></div>
       <p class="nav-disclaimer">地図上の交差点の印も選択できます。位置は手動指定の目安です。現地の歩道・信号・通行規制を優先してください。</p>
     </section>`;
     const select = byId('nav-position');
-    good.forEach((p, idx) => {
+    candidates.forEach((p, idx) => {
       const option = document.createElement('option'); option.value = String(idx);
       option.textContent = `${idx + 1}. ${roadAction(p)}${p.name ? ' — ' + p.name : ''}`;
       select.appendChild(option);
@@ -171,7 +202,7 @@
     // Allow selecting a junction directly on the actual OSM map.
     if (map && typeof L !== 'undefined') {
       state.turnMarkers = L.layerGroup().addTo(map);
-      good.forEach((point, i) => {
+      candidates.forEach((point, i) => {
         L.circleMarker(point.location, { className: 'nav-turn-marker', radius: 7, color: '#ffffff', weight: 2,
           fillColor: '#36846f', fillOpacity: .88 })
           .addTo(state.turnMarkers)
@@ -201,9 +232,9 @@
     byId('nav-counter').textContent = `${nextIndex + 1} / ${turns.length} 地点`;
     byId('nav-action').textContent = next ? nextAction : '目的地に到着';
     const dist = Number(current.distance) || 0;
-    byId('nav-distance').textContent = next ? (state.route.completeTurns && dist >= 1 ? `次の曲がり角まで 約${Math.round(dist)}m` : '次の操作までの距離は未確認') : 'この区間の終点です';
+    byId('nav-distance').textContent = next ? (state.route.completeTurns && dist >= 1 ? `次の地点まで 約${Math.round(dist)}m` : '次の操作までの距離は未確認') : 'この区間の終点です';
     byId('nav-current-point').textContent = `選択地点：${current.name || currentAction}`;
-    byId('nav-picture').innerHTML = turnDiagram(next || current);
+
     byId('nav-prev').disabled = nextIndex === 0;
     byId('nav-next').disabled = nextIndex === turns.length - 1;
     const list = byId('nav-step-scroll');
@@ -221,7 +252,8 @@
     state.marker.addTo(state.map).bindTooltip('選択した現在地（手動）', { permanent: true, direction: 'top', offset: [0, -9] });
     // Map remains north-up: no false heading or GPS claim. Zoom around selected junction.
     state.map.setView(slice.point, 18, { animate: false });
+    FieldworkLocalMap.update(slice,turns);
   }
 
-  window.FieldworkNavigator = Object.freeze({ reset, setRoute, unavailable, splitAt, turnDiagram, roadAction, selectPoint });
+  window.FieldworkNavigator = Object.freeze({ reset, setRoute, unavailable, splitAt, turnDiagram, roadAction, selectPoint, addStraightPoints });
 })();

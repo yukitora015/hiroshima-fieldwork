@@ -36,7 +36,7 @@
     if (!Number.isFinite(nextDistance) || nextDistance <= 0) return DEFAULT_SCALE;
     // Keep the next point in the forward part of the panel when possible,
     // while limiting zoom so nearby streets remain legible.
-    return Math.max(0.9, Math.min(2.4, 130 / Math.max(nextDistance, 1)));
+    return Math.max(0.9, Math.min(5.2, 130 / Math.max(nextDistance, 1)));
   }
 
   function project(point, center, travelBearing, scale = DEFAULT_SCALE) {
@@ -164,7 +164,7 @@
     const background = backgroundLayer(contextData, slice.point, travelBearing, scale);
     const destination = destinationPin(slice, travelBearing, scale);
     const dots = turnDots(turns, slice, travelBearing, scale);
-    const barMetres = [10,20,25,40,50,75,100].reduce((best,n)=>Math.abs(n*scale-70)<Math.abs(best*scale-70)?n:best,10);
+    const barMetres = [5,10,20,25,40,50,75,100].reduce((best,n)=>Math.abs(n*scale-70)<Math.abs(best*scale-70)?n:best,5);
     const barStart = 330-barMetres*scale;
     // All text lives in the unrotated SVG coordinate space.
     return `<svg class="nav-schematic" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${WIDTH} ${HEIGHT}" preserveAspectRatio="xMidYMid meet" role="img" aria-label="選択地点周辺の実際の歩行ルートを簡略化した図。進行方向が上。現在地は手動選択。">

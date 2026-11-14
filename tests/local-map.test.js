@@ -12,6 +12,8 @@ assert.equal(m.heading({point:[0,0],future:[[0,0],[0,0.001]],past:[[0,-0.001],[0
 assert.equal(m.heading({point:[0,0],future:[[0,0]],past:[[0,-0.001],[0,0]]}),90);
 assert.ok(m.chooseScale(20)>m.chooseScale(100),'nearby steps should be more zoomed in');
 assert.ok(m.chooseScale(100)>m.chooseScale(300),'longer steps should show a wider area');
+assert.equal(m.chooseScale(5),5.2,'very short steps use the stronger zoom');
+assert.ok(m.chooseScale(14)>2.4,'short steps zoom beyond the previous limit');
 assert.equal(m.chooseScale(0),1.925,'arrival falls back to a stable scale');
 assert.equal(m.chooseScale(10000),0.9,'zoom out has a lower bound');
 const path=[[34.39,132.45],[34.39,132.46]];

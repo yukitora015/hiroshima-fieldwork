@@ -16,4 +16,3 @@ const places={prefecture:{lat:34.3965192,lng:132.459676},hondori:{lat:34.3935628
  await assert.rejects(()=>ctx.window.FieldworkRouting.route({from:'prefecture',to:'hondori',mode:'transit'},places));
  console.log('OK: curved network route, turn instructions, caching, indoor no line, transit no fake path');
 })().catch(e=>{console.error(e);process.exitCode=1});
-

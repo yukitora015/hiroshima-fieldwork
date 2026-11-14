@@ -31,7 +31,7 @@ a{color:var(--brand2)}button{font:inherit}img{max-width:100%}
 .tab{border:1px solid var(--line);background:rgba(255,255,255,.7);border-radius:18px;padding:14px 16px;text-align:left;cursor:pointer;box-shadow:var(--shadow)}
 .tab strong{display:block;font-size:16px}.tab small{display:block;color:var(--muted);margin-top:2px}
 .tab.active{background:var(--brand);color:#fff;border-color:var(--brand)}.tab.active small{color:#dbece6}
-.grid{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(320px,.8fr);gap:20px;align-items:start}
+.grid{display:grid;grid-template-columns:minmax(0,1fr);gap:20px;align-items:start;max-width:820px;margin:auto}
 .panel{background:rgba(255,255,255,.88);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
 .summary{padding:18px 18px 8px}.summary h2{margin:0 0 6px;font-size:22px;letter-spacing:-.03em}.summary p{margin:0;color:var(--muted)}
 .legend{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
@@ -63,6 +63,12 @@ a{color:var(--brand2)}button{font:inherit}img{max-width:100%}
 .actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px}
 .actions a{display:inline-flex;align-items:center;justify-content:center;min-height:42px;padding:0 14px;border-radius:999px;text-decoration:none;font-size:13px;font-weight:800;border:1px solid var(--brand);background:var(--brand);color:#fff}
 .actions a.alt{background:#fff;color:var(--brand)}
+.actions .nav-open{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:0 18px;border-radius:999px;border:1px solid var(--brand);background:var(--brand);color:#fff;font-size:14px;font-weight:800;cursor:pointer}
+.nav-dialog{border:0;border-radius:20px;padding:0;width:min(720px,calc(100% - 24px));max-width:none;max-height:calc(100dvh - 24px);color:var(--text);background:var(--paper);box-shadow:0 18px 55px #102a2360;overflow:auto}
+.nav-dialog::backdrop{background:rgba(10,25,20,.6)}
+.nav-dialog-header{position:sticky;top:0;z-index:1000;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:12px 16px;background:var(--paper);border-bottom:1px solid var(--line)}
+.nav-dialog-header h2{margin:0;font-size:18px}.nav-close{width:44px;height:44px;flex:none;border:1px solid var(--line);border-radius:50%;background:#fff;font-size:28px;line-height:1;color:var(--text);cursor:pointer}
+.nav-dialog .mapwrap{border:0;border-radius:0;box-shadow:none}
 .footer-note{margin-top:22px;padding:16px 18px;border-top:1px solid var(--line);color:var(--muted);font-size:12px}
 .leaflet-container{font-family:var(--sans)!important}
 .route-label{background:#fff;border:1px solid var(--line);padding:4px 8px;border-radius:999px;font-size:12px;font-weight:700;color:var(--brand)}
@@ -77,11 +83,8 @@ a{color:var(--brand2)}button{font:inherit}img{max-width:100%}
   <header class="hero">
     <div class="kicker">HIROSHIMA FIELDWORK / ROUTE GUIDE</div>
     <h1>区間ごとのルート案内</h1>
-    <p>各グループの移動を、<strong>1区間ずつ</strong>追える形に整理しました。選択した徒歩区間は道路・歩道データに沿った線を表示します。直線で結ぶ概略ルートは表示しません。</p>
-    <div class="notice"><strong>道順について：</strong>徒歩区間ではOpenStreetMapの歩行者経路データからルートを取得します。<strong>道路に沿った線を取得できない場合は描画しません。</strong> 駅構内・路面電車は経路線未対応のため、Googleマップの交通案内で確認してください。工事・出入口・通行可否は現地で必ずご確認ください。</div>
     <p>経路データ：<a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">© OpenStreetMap contributors</a>／<a href="https://routing.openstreetmap.de/about.html" target="_blank" rel="noopener noreferrer">FOSSGIS・OSRM</a>。<a href="https://www.openstreetmap.org/" target="_blank" rel="noopener noreferrer">地図を確認・修正</a></p>
     <p class="overview-link"><a href="overview.html">全体の予定・合流関係を見る</a></p>
-    <div class="topchips"><div class="chip">2D地図</div><div class="chip">グループ切替</div><div class="chip">目印・参考案内</div><div class="chip">目印つき</div><div class="chip">スマホ表示対応</div></div>
   </header>
 
   <nav class="tabs" aria-label="グループ切替">
@@ -101,6 +104,9 @@ a{color:var(--brand2)}button{font:inherit}img{max-width:100%}
       <div class="footer-note">※移動時間と方向案内は現地検証前の参考情報です。元の行程にあった時刻未定の予定は確定していません。グループ2・3が本川小学校平和資料館まで同行する予定は反映しています。</div>
     </section>
 
+  </div>
+  <dialog id="nav-dialog" class="nav-dialog" aria-labelledby="nav-dialog-title">
+    <div class="nav-dialog-header"><h2 id="nav-dialog-title">区間のナビ</h2><button type="button" id="nav-close" class="nav-close" aria-label="ナビを閉じる">×</button></div>
     <aside class="panel mapwrap">
       <div class="maphead"><div><h3>選択中の区間地図</h3><p>カードを選ぶと道路に沿う経路を表示</p></div></div>
       <label class="segment-picker-label" for="segment-picker">移動する区間を選択</label><select id="segment-picker" aria-label="移動区間の選択"></select>
@@ -112,7 +118,7 @@ a{color:var(--brand2)}button{font:inherit}img{max-width:100%}
         <span id="route-status" hidden></span>
       </div>
     </aside>
-  </div>
+  </dialog>
 </div>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="js/route-engine.js"></script>
@@ -257,20 +263,26 @@ function renderSegments(){
           <div class="meta-pill"><b>確認</b><span>${escapeHtml(seg.verify)}</span></div>
         </div>
         <div class="minimap" id="${miniId}"></div>
-        <div class="cols">
-          <div class="box"><h4>曲がり角の案内</h4><ol><li>このカードを選択すると「選択中の区間地図」に道路データに基づく案内を表示します。</li></ol></div>
-          
-        </div>
         <div class="actions">
+          <button type="button" class="nav-open" data-nav-open="${idx}" aria-haspopup="dialog">ナビを表示</button>
           <a href="${gmapsDir(seg.from, seg.to, seg.mode)}" target="_blank" rel="noopener noreferrer">Googleマップで実際の経路を確認 ↗</a>
           <a class="alt" href="${PLACES[seg.to].official}" target="_blank" rel="noopener noreferrer">到着地の公式情報 ↗</a>
         </div>
       </div>`;
-    card.addEventListener('click',(e)=>{ if(e.target.closest('a')) return; currentSeg = idx; renderSegments(); document.getElementById(miniId)?.scrollIntoView?.({block:'nearest'}); });
+    card.querySelector('.nav-open').addEventListener('click',()=>{
+      currentSeg=idx;
+      const dialog=document.getElementById('nav-dialog');
+      if(!dialog.open)dialog.showModal();
+      dialog.scrollTop=0;
+      if(!map)initMap();
+      renderSegments();
+      document.getElementById('nav-close').focus();
+    });
+    card.addEventListener('click',(e)=>{ if(e.target.closest('a,button')) return; currentSeg = idx; renderSegments(); document.getElementById(miniId)?.scrollIntoView?.({block:'nearest'}); });
     wrap.appendChild(card);
     setTimeout(()=>createMiniMap(miniId, seg), 0);
   });
-  drawSegmentOnMap(group.segments[currentSeg]);
+  if(document.getElementById('nav-dialog').open)drawSegmentOnMap(group.segments[currentSeg]);
 }
 
 document.querySelectorAll('.tab').forEach(btn=>btn.addEventListener('click',()=>{
@@ -284,7 +296,12 @@ document.getElementById('segment-picker').addEventListener('change',event=>{
   currentSeg=Number(event.target.value);
   renderSegments();
 });
-initMap();
+document.getElementById('nav-close').addEventListener('click',()=>document.getElementById('nav-dialog').close());
+document.getElementById('nav-dialog').addEventListener('close',()=>{
+  routeToken++;
+  FieldworkNavigator.reset(null,map,routeLayer);
+  document.querySelector(`.nav-open[data-nav-open="${currentSeg}"]`)?.focus();
+});
 renderSegments();
 </script>
 </body>

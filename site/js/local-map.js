@@ -226,9 +226,8 @@
     const scale=Math.min(290/Math.max(right-left,1),210/Math.max(bottom-top,1));
     const convert=p=>{const v=raw(p);return [180+(v[0]-(left+right)/2)*scale,150+(v[1]-(top+bottom)/2)*scale];};
     const points=ps=>ps.map(p=>{const [x,y]=convert(p);return fixed(x)+','+fixed(y);}).join(' ');
-    const lats=path.map(p=>p[0]),lons=path.map(p=>p[1]);
-    const bounds=[Math.min(...lats)-.001,Math.min(...lons)-.001,Math.max(...lats)+.001,Math.max(...lons)+.001];
-    const features=(data?.features||[]).filter(f=>Array.isArray(f.points)&&f.points.length>=2&&Array.isArray(f.bounds)&&f.bounds[0]<=bounds[2]&&f.bounds[2]>=bounds[0]&&f.bounds[1]<=bounds[3]&&f.bounds[3]>=bounds[1]);
+    // Project the entire bus-area extract, then clip to the square viewport.
+    const features=(data?.features||[]).filter(f=>Array.isArray(f.points)&&f.points.length>=2);
     const background=[];
     for(const kind of ['water','green','road'])for(const f of features){
       if(f.kind!==kind || (kind==='road' && !['trunk','primary','primary_link','secondary','tertiary'].includes(f.subtype)))continue;
@@ -244,10 +243,16 @@
     const seq=++generation;
     if(!outer)return;
     outer.innerHTML=renderBusSvg(path,context,stops) || '<p>バスの経路図を取得できません。交通案内をご確認ください。</p>';
-    await loadLandmarks();
+    let busContext=null;
+    try {
+      const response=await fetch('data/bus-context.json?v=1');
+      if(!response.ok)throw new Error('bus context unavailable');
+      busContext=await response.json();
+      if(!Array.isArray(busContext.features))throw new Error('invalid bus context');
+    } catch (_) { /* Keep the route visible and explain the missing background. */ }
     if(seq!==generation || document.getElementById('bus-schematic')!==outer)return;
-    outer.innerHTML=renderBusSvg(path,context,stops) || '<p>バスの経路図を取得できません。交通案内をご確認ください。</p>';
-    if(!context)outer.insertAdjacentHTML('beforeend','<p class="context-unavailable">周辺地図データを読み込めませんでした。</p>');
+    outer.innerHTML=renderBusSvg(path,busContext,stops) || '<p>バスの経路図を取得できません。交通案内をご確認ください。</p>';
+    if(!busContext)outer.insertAdjacentHTML('beforeend','<p class="context-unavailable">周辺地図データを読み込めませんでした。</p>');
   }
 
   window.FieldworkLocalMap = Object.freeze({

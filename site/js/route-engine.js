@@ -59,7 +59,7 @@
     if (segment.mode === 'transit') {
       throw new Error('路面電車の線路形状は未取得です。電車を含む正しい道順は交通案内で確認してください。');
     }
-    if (metres([start.lat, start.lng], [end.lat, end.lng]) < 90) {
+    if (!segment.allowShortOutdoor && metres([start.lat, start.lng], [end.lat, end.lng]) < 90) {
       return { type: 'indoor', paths: [], directions: ['近接地点または建物内の移動です。詳細な通路は未確認のため線を描きません。'], metres: 0 };
     }
     // FOSSGIS foot-profile OSRM server. 'driving' is the OSRM API profile URL syntax;

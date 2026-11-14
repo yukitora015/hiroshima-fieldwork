@@ -121,18 +121,25 @@ a{color:var(--brand2)}button{font:inherit}img{max-width:100%}
   </dialog>
 </div>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script src="js/route-engine.js"></script>
+<script src="js/route-engine.js?v=2"></script>
 <script src="js/bus-route.js"></script>
 <script src="js/local-map.js?v=8"></script>
 <script src="js/nav-guide.js?v=6"></script>
 <script>
 const PLACES = {"station":{"name":"広島駅","lat":34.3976198,"lng":132.4753631,"address":"広島県広島市南区松原町2","official":"https://www.jr-odekake.net/eki/top?id=0800605"},"fukuya":{"name":"福屋八丁堀本店","lat":34.3935097,"lng":132.4626307,"address":"広島県広島市中区胡町6-26","official":"https://www.fukuya-dept.co.jp/honten/access/"},"shukkeien":{"name":"縮景園","lat":34.4003492,"lng":132.4671298,"address":"広島県広島市中区上幟町2-11","official":"https://shukkeien.jp/access/"},"prefecture":{"name":"広島県庁","lat":34.3965192,"lng":132.459676,"address":"広島県広島市中区基町10-52","official":"https://www.pref.hiroshima.lg.jp/site/accesschousyarenrakusaki/"},"hondori":{"name":"本通り（本通エリア）","lat":34.3935628,"lng":132.4571519,"address":"広島県広島市中区本通周辺","official":"https://www.hondori.or.jp/"},"benbee":{"name":"弁兵衛 大手町店","lat":34.39191096,"lng":132.45615167,"address":"広島県広島市中区大手町2-7-7 1F","official":"https://hiroshima-benbe-ootemachi.owst.jp/"},"reference":{"name":"リファレンス広島小町ビル","lat":34.3891032,"lng":132.4559812,"address":"広島県広島市中区小町3-19","official":"https://re-rental.com/hiroshima/access/"},"cake":{"name":"バッケンモーツァルト CAKE & CAFE 松原町","lat":34.397879,"lng":132.4757374,"address":"広島県広島市南区松原町1-2（ekie内）","official":"https://www.b-mozart.co.jp/?mode=f6"},"omiyage":{"name":"おみやげ街道 エキエ広島","lat":34.397879,"lng":132.4757374,"address":"広島県広島市南区松原町1-2（ekie内）","official":"https://www.sn-hiroshima.co.jp/pages/137/"},"snacks":{"name":"駅付近（土産・軽食）","lat":34.397879,"lng":132.4757374,"address":"広島駅 ekie 周辺","official":"https://www.ekie.jp/"},"museum":{"name":"本川小学校平和資料館","lat":34.39588,"lng":132.45061,"address":"広島県広島市中区本川町1-5-39","official":"https://www.city.hiroshima.lg.jp/atomicbomb-peace/fukko/1021101/1026920/1026921/1020868.html"},"school":{"name":"本川小学校","lat":34.396251,"lng":132.4503758,"address":"広島県広島市中区本川町1-5-39","official":"https://cms.edu.city.hiroshima.jp/weblog/index.php?id=e0899"}};
 const GROUPS = {"1":{"title":"グループ1","summary":"福屋八丁堀本店と縮景園を経由し、15:00ごろ広島県庁でグループ2と合流。その後は本通り→弁兵衛→リファレンス広島小町ビルへ。","segments":[{"from":"station","to":"fukuya","mode":"walking","label":"広島駅 → 福屋八丁堀本店","eta":"所要時間は経路サービスで確認","verify":"歩行者経路・施設入口・交通状況は当日ご確認ください。","landmarks":[],"steps":["移動する直前に地図アプリで道順を確認してください。"]},{"from":"fukuya","to":"shukkeien","mode":"walking","label":"福屋八丁堀本店 → 縮景園","eta":"所要時間は経路サービスで確認","verify":"歩行者経路・施設入口・交通状況は当日ご確認ください。","landmarks":[],"steps":["移動する直前に地図アプリで道順を確認してください。"]},{"from":"shukkeien","to":"prefecture","mode":"walking","label":"縮景園 → 広島県庁","eta":"所要時間は経路サービスで確認","verify":"歩行者経路・施設入口・交通状況は当日ご確認ください。","landmarks":[],"steps":["移動する直前に地図アプリで道順を確認してください。"]},{"from":"prefecture","to":"hondori","mode":"walking","label":"広島県庁 → 本通り","eta":"所要時間は経路サービスで確認","verify":"歩行者経路・施設入口・交通状況は当日ご確認ください。","landmarks":[],"steps":["移動する直前に地図アプリで道順を確認してください。"]},{"from":"hondori","to":"benbee","mode":"walking","label":"本通り → 弁兵衛 大手町店","eta":"所要時間は経路サービスで確認","verify":"歩行者経路・施設入口・交通状況は当日ご確認ください。","landmarks":[],"steps":["移動する直前に地図アプリで道順を確認してください。"]},{"from":"benbee","to":"reference","mode":"walking","label":"弁兵衛 大手町店 → リファレンス広島小町ビル","eta":"所要時間は経路サービスで確認","verify":"歩行者経路・施設入口・交通状況は当日ご確認ください。","landmarks":[],"steps":["移動する直前に地図アプリで道順を確認してください。"]}]},"2":{"title":"グループ2","summary":"広島駅周辺（ekie）で立ち寄り後、本川小学校平和資料館へ。15:00ごろ広島県庁でグループ1と合流し、その後は本通り→弁兵衛→リファレンス広島小町ビルへ。","segments":[{"from":"station","to":"cake","mode":"walking","label":"広島駅 → バッケンモーツァルト CAKE & CAFE 松原町","eta":"所要時間は経路サービスで確認","verify":"歩行者経路・施設入口・交通状況は当日ご確認ください。","landmarks":[],"steps":["移動する直前に地図アプリで道順を確認してください。"]},{"from":"cake","to":"omiyage","mode":"walking","label":"バッケンモーツァルト → おみやげ街道 エキエ広島","eta":"所要時間は経路サービスで確認","verify":"歩行者経路・施設入口・交通状況は当日ご確認ください。","landmarks":[],"steps":["移動する直前に地図アプリで道順を確認してください。"]},{"from":"omiyage","to":"museum","mode":"transit","label":"おみやげ街道 → 本川小学校平和資料館","eta":"所要時間は経路サービスで確認","verify":"歩行者経路・施設入口・交通状況は当日ご確認ください。","landmarks":[],"steps":["移動する直前に地図アプリで道順を確認してください。"]},{"from":"museum","to":"prefecture","mode":"walking","label":"本川小学校平和資料館 → 広島県庁","eta":"所要時間は経路サービスで確認","verify":"歩行者経路・施設入口・交通状況は当日ご確認ください。","landmarks":[],"steps":["移動する直前に地図アプリで道順を確認してください。"]},{"from":"prefecture","to":"hondori","mode":"walking","label":"広島県庁 → 本通り","eta":"所要時間は経路サービスで確認","verify":"歩行者経路・施設入口・交通状況は当日ご確認ください。","landmarks":[],"steps":["移動する直前に地図アプリで道順を確認してください。"]},{"from":"hondori","to":"benbee","mode":"walking","label":"本通り → 弁兵衛 大手町店","eta":"所要時間は経路サービスで確認","verify":"歩行者経路・施設入口・交通状況は当日ご確認ください。","landmarks":[],"steps":["移動する直前に地図アプリで道順を確認してください。"]},{"from":"benbee","to":"reference","mode":"walking","label":"弁兵衛 大手町店 → リファレンス広島小町ビル","eta":"所要時間は経路サービスで確認","verify":"歩行者経路・施設入口・交通状況は当日ご確認ください。","landmarks":[],"steps":["移動する直前に地図アプリで道順を確認してください。"]}]},"3":{"title":"グループ3","summary":"グループ2と一緒に、広島駅→バッケンモーツァルト→おみやげ街道→本川小学校平和資料館を訪問。その後、本川小学校で教頭先生との予定を終え、本通りで全員と合流します。","segments":[{"from":"station","to":"cake","mode":"walking","label":"広島駅 → バッケンモーツァルト CAKE & CAFE 松原町","eta":"所要時間は経路サービスで確認","verify":"歩行者経路・施設入口・交通状況は当日ご確認ください。","landmarks":[],"steps":["移動する直前に地図アプリで道順を確認してください。"]},{"from":"cake","to":"omiyage","mode":"walking","label":"バッケンモーツァルト → おみやげ街道 エキエ広島","eta":"所要時間は経路サービスで確認","verify":"歩行者経路・施設入口・交通状況は当日ご確認ください。","landmarks":[],"steps":["移動する直前に地図アプリで道順を確認してください。"]},{"from":"omiyage","to":"museum","mode":"transit","label":"おみやげ街道 → 本川小学校平和資料館","eta":"所要時間は経路サービスで確認","verify":"歩行者経路・施設入口・交通状況は当日ご確認ください。","landmarks":[],"steps":["移動する直前に地図アプリで道順を確認してください。"]},{"from":"museum","to":"school","mode":"walking","label":"本川小学校平和資料館 → 本川小学校","eta":"所要時間は経路サービスで確認","verify":"歩行者経路・施設入口・交通状況は当日ご確認ください。","landmarks":[],"steps":["移動する直前に地図アプリで道順を確認してください。"]},{"from":"school","to":"hondori","mode":"walking","label":"本川小学校 → 本通り","eta":"所要時間は経路サービスで確認","verify":"歩行者経路・施設入口・交通状況は当日ご確認ください。","landmarks":[],"steps":["移動する直前に地図アプリで道順を確認してください。"]},{"from":"hondori","to":"benbee","mode":"walking","label":"本通り → 弁兵衛 大手町店","eta":"所要時間は経路サービスで確認","verify":"歩行者経路・施設入口・交通状況は当日ご確認ください。","landmarks":[],"steps":["移動する直前に地図アプリで道順を確認してください。"]},{"from":"benbee","to":"reference","mode":"walking","label":"弁兵衛 大手町店 → リファレンス広島小町ビル","eta":"所要時間は経路サービスで確認","verify":"歩行者経路・施設入口・交通状況は当日ご確認ください。","landmarks":[],"steps":["移動する直前に地図アプリで道順を確認してください。"]}]}};
+// 停留所座標は広島交通 GTFS-JP の該当便に基づく。
+PLACES.busHiroshima={name:'広島駅バス停（8番のりば）',lat:34.397303497939774,lng:132.47437195139912};
+PLACES.busHonkawa={name:'本川町バス停',lat:34.3966773,lng:132.450556};
+const BUS_WALKS=[
+ {from:'omiyage',to:'busHiroshima',mode:'walking',label:'ekie → 広島駅バス停'},
+ {from:'busHonkawa',to:'museum',mode:'walking',allowShortOutdoor:true,label:'本川町バス停 → 資料館'}
+];
 // このバスは両グループが同行する既存の移動区間として扱う。
 for (const id of ['2','3']) {
   const seg=GROUPS[id].segments.find(s=>s.from==='omiyage' && s.to==='museum');
   seg.bus=true; seg.eta='予定：12:40 広島駅発 → 12:49 本川町着';
-  seg.verify='時刻・運賃・乗り場・運行状況は当日、広島交通の案内で確認してください。徒歩部分と駅構内は線を表示しません。';
+  seg.verify='時刻・運賃・乗り場・通行可否は当日確認してください。駅構内の通路は未確認です。';
 }
 let currentGroup = '1';
 let currentSeg = 0;
@@ -199,7 +206,8 @@ async function drawSegmentOnMap(seg){
    if(bounds)map.fitBounds(bounds.pad(.2),{maxZoom:17});
    const mini=minimaps.get('mini-'+currentGroup+'-'+currentSeg);
    if(mini && bounds)paintRoadRoute(mini,busRoute,4);
-   FieldworkNavigator.unavailable('バス区間です。徒歩ナビは表示しません。バス停と乗り場は区間案内でご確認ください。');
+   FieldworkNavigator.unavailable('この区間はバスと徒歩を含みます。緑は徒歩、紫はバスの参考経路です。歩行可能か現地で確認してください。');
+   loadBusWalks(seq);
    return;
  }
  try{
@@ -224,6 +232,20 @@ async function drawSegmentOnMap(seg){
    FieldworkNavigator.unavailable(seg.mode==='transit' ? '路面電車区間は曲がり角を表示できません。Googleマップで乗換案内をご覧ください。' : '歩行者経路を取得できませんでした。地図アプリをご利用ください。');
  }
 }
+async function loadBusWalks(seq){
+ const group=currentGroup, index=currentSeg;
+ const results=await Promise.all(BUS_WALKS.map(leg=>FieldworkRouting.route(leg,PLACES).catch(()=>null)));
+ if(seq!==routeToken || group!==currentGroup || index!==currentSeg)return;
+ const mini=minimaps.get('mini-'+group+'-'+index);
+ const info=document.querySelector('[data-bus-walk-info]');
+ results.forEach((route,i)=>{
+   if(route?.type==='walking'){
+     paintRoadRoute(routeLayer,route,5);
+     if(mini)paintRoadRoute(mini,route,4);
+   }
+ });
+ if(info)info.textContent=results.map((r,i)=>BUS_WALKS[i].label+'：'+(r?.type==='walking'?'歩行者経路を表示':'経路を取得できません。Googleマップで確認してください')).join(' ／ ');
+}
 function createMiniMap(elId,seg){
  const el=document.getElementById(elId);if(!el)return;
  if(typeof L==='undefined'){
@@ -239,6 +261,9 @@ function createMiniMap(elId,seg){
  const bounds=cache?.paths?.length?paintRoadRoute(m,cache,4):L.latLngBounds([[a.lat,a.lng],[b.lat,b.lng]]);
  m.fitBounds(bounds.pad(.28),{maxZoom:17});
  minimaps.set(elId,m);
+ if(seg.bus)BUS_WALKS.forEach(leg=>FieldworkRouting.route(leg,PLACES).then(route=>{
+   if(minimaps.get(elId)===m && route.type==='walking')paintRoadRoute(m,route,4);
+ }).catch(()=>{}));
 }
 function renderSegments(){
   const group = GROUPS[currentGroup];
@@ -279,7 +304,7 @@ function renderSegments(){
           <div class="meta-pill"><b>確認</b><span>${escapeHtml(seg.verify)}</span></div>
         </div>
         <div class="minimap" id="${miniId}"></div>
-        ${seg.bus ? `<div class="box"><h4>🚌 広島交通 71-1 平原線（広島文化学園行き）</h4><p>広島駅南口 8番のりば → 本川町。紫色はバスの参考経路です。駅構内と降車後の徒歩経路は表示していません。</p><p>予定：12:35 ekie出発 → 12:40 広島駅発 → 12:49 本川町着 → 資料館へ徒歩。運賃は資料では240円（要確認）。</p><details><summary>停車するバス停を見る</summary><ol><li>広島駅（乗車）</li><li>八丁堀</li><li>立町</li><li>紙屋町</li><li>本川町（降車）</li></ol></details><p><a href="https://www.hiroko-group.co.jp/kotsu/bisyamon.html" target="_blank" rel="noopener noreferrer">広島交通の時刻表・運賃を確認 ↗</a> ／ <a href="https://www.bus-kyo.or.jp/gtfs-open-data/" target="_blank" rel="noopener noreferrer">経路：広島交通 GTFS-JP（広島県バス協会、CC0）</a></p></div>` : ''}
+        ${seg.bus ? `<div class="box"><h4>🚌 広島交通 71-1 平原線（広島文化学園行き）</h4><p>広島駅南口 8番のりば → 本川町。紫色はバス、緑色は取得できた徒歩経路です。駅構内の通路は未確認です。</p><p>予定：12:35 ekie出発 → 12:40 広島駅発 → 12:49 本川町着 → 資料館へ徒歩。運賃は資料では240円（要確認）。</p><p data-bus-walk-info>徒歩経路はナビを開くと取得状況を確認できます。</p><details><summary>停車するバス停を見る</summary><ol><li>広島駅（乗車）</li><li>八丁堀</li><li>立町</li><li>紙屋町</li><li>本川町（降車）</li></ol></details><p><a href="https://www.hiroko-group.co.jp/kotsu/bisyamon.html" target="_blank" rel="noopener noreferrer">広島交通の時刻表・運賃を確認 ↗</a> ／ <a href="https://www.bus-kyo.or.jp/gtfs-open-data/" target="_blank" rel="noopener noreferrer">経路：広島交通 GTFS-JP（広島県バス協会、CC0）</a></p></div>` : ''}
         <div class="actions">
           <button type="button" class="nav-open" data-nav-open="${idx}" aria-haspopup="dialog">ナビを表示</button>
           <a href="${gmapsDir(seg.from, seg.to, seg.mode)}" target="_blank" rel="noopener noreferrer">Googleマップで実際の経路を確認 ↗</a>
@@ -323,3 +348,4 @@ renderSegments();
 </script>
 </body>
 </html>
+

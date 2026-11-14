@@ -85,7 +85,7 @@
   <aside class="map-col" id="map-section" aria-labelledby="map-title">
     <div class="map-heading"><h2 id="map-title">訪問先の地図</h2><p>グループごとに切替</p></div>
     <div class="map-frame" aria-label="選択中のグループの位置図"><div id="fallback-map" class="map-fallback"></div><div id="map" class="map-real" role="img" aria-label="訪問順の地図"></div></div>
-    <p class="map-note">線は訪問順を示す概略です。実際の道路・電車の経路とは異なります。詳細な道順はGoogleマップで確認してください。外部の経路リンクは一部の経由地のみを含みます。</p>
+    <p class="map-note">この地図は訪問先の位置を示します。道路や電車の経路は表示していません。詳細な道順は区間案内またはGoogleマップで確認してください。外部の経路リンクは一部の経由地のみを含みます。</p>
     <div class="map-actions"><a class="action-link" id="whole-route" target="_blank" rel="noopener noreferrer" href="https://www.google.com/maps/">主要地点の道順を見る ↗</a><a class="action-link secondary" href="#schedule">予定に戻る ↑</a></div>
     <div id="map-key" class="place-key" aria-label="地図の凡例"></div>
   </aside>
@@ -169,9 +169,8 @@ function renderFallback(group){
  const rows=uniqueStops(GROUPS[group].stops);const pts=rows.map(s=>PLACES[s.p]); const lats=pts.map(x=>x.lat),lngs=pts.map(x=>x.lng);
  const latMin=Math.min(...lats)-.0015,latMax=Math.max(...lats)+.0015,lngMin=Math.min(...lngs)-.0015,lngMax=Math.max(...lngs)+.0015;
  const x=p=> 24 + (p.lng-lngMin)/(lngMax-lngMin)*652, y=p=> 30+(latMax-p.lat)/(latMax-latMin)*300;
- const lines=pts.map(p=>`${x(p).toFixed(1)},${y(p).toFixed(1)}`).join(' ');
  let pins=pts.map((p,i)=>`<g transform="translate(${x(p).toFixed(1)},${y(p).toFixed(1)})"><circle r="15" fill="#28574e" stroke="#fff" stroke-width="3"/><text text-anchor="middle" y="4.5" font-size="11" font-family="sans-serif" fill="white" font-weight="700">${i+1}</text></g>`).join('');
- $('fallback-map').innerHTML=`<svg viewBox="0 0 700 360" preserveAspectRatio="xMidYMid meet" role="img" aria-label="訪問先の相対位置を示す概略図" style="width:100%;height:100%;background:#e9f1ec"><path d="M-20 80L720 80M-20 180L720 180M-20 280L720 280M150 0L150 400M355 0L355 400M555 0L555 400" stroke="#d3dfd7" stroke-width="16" opacity=".6" fill="none"/><polyline points="${lines}" fill="none" stroke="#28574e" stroke-width="3" stroke-dasharray="5 8" stroke-linecap="round"/>${pins}<text x="16" y="344" font-size="12" fill="#587269" font-family="sans-serif">概略位置図・地図タイル未読込</text><text x="673" y="24" text-anchor="end" font-size="12" fill="#587269" font-family="sans-serif">N ↑</text></svg>`;
+ $('fallback-map').innerHTML=`<svg viewBox="0 0 700 360" preserveAspectRatio="xMidYMid meet" role="img" aria-label="訪問先の相対位置を示す概略図" style="width:100%;height:100%;background:#e9f1ec"><path d="M-20 80L720 80M-20 180L720 180M-20 280L720 280M150 0L150 400M355 0L355 400M555 0L555 400" stroke="#d3dfd7" stroke-width="16" opacity=".6" fill="none"/>${pins}<text x="16" y="344" font-size="12" fill="#587269" font-family="sans-serif">概略位置図・地図タイル未読込</text><text x="673" y="24" text-anchor="end" font-size="12" fill="#587269" font-family="sans-serif">N ↑</text></svg>`;
 }
 function renderMap(group){renderFallback(group);renderKey(group);$('whole-route').href=routeUrl(group);
  if(!window.L) return;
@@ -179,7 +178,6 @@ function renderMap(group){renderFallback(group);renderKey(group);$('whole-route'
  if(markerGroup)markerGroup.remove();if(routeLine)routeLine.remove();
  markerGroup=L.layerGroup().addTo(map);const unique=uniqueStops(GROUPS[group].stops),pts=unique.map(s=>[PLACES[s.p].lat,PLACES[s.p].lng]);
  unique.forEach((s,i)=>{const p=PLACES[s.p];const icon=L.divIcon({className:'pin',html:String(i+1),iconSize:[28,28],iconAnchor:[14,14]});const m=L.marker([p.lat,p.lng],{icon}).addTo(markerGroup);m.bindPopup(`<strong>${escapeHtml(p.name)}</strong><br>${escapeHtml(GROUPS[group].stops.filter(x=>x.p===s.p).map(x=>x.time).join(' / '))}<br><a href="${googleSearch(p.q)}" target="_blank" rel="noopener noreferrer">Googleマップで確認 ↗</a>`)});
- routeLine=L.polyline(pts,{color:'#28574e',weight:3,dashArray:'5 8',opacity:.83}).addTo(map);
  setTimeout(()=>{map.invalidateSize();if(pts.length>1)map.fitBounds(L.latLngBounds(pts),{padding:[26,26],maxZoom:15});else map.setView(pts[0],14)},80)
 }
 function selectGroup(group,changeHash=true){if(!GROUPS[group])return;active=group;

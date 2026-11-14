@@ -4,7 +4,7 @@
 (function () {
   'use strict';
   const WIDTH = 360, HEIGHT = 300, ORIGIN_X = 180, ORIGIN_Y = 200;
-  const PX_PER_METRE = 1.4;
+  const PX_PER_METRE = 1.75;
   const DEG = Math.PI / 180;
   let landmarks = [], loaded = false, loadPromise = null, context = null;
   let generation = 0, lastSlice = null, lastTurns = [];
@@ -170,7 +170,7 @@
       <line x1="260" y1="283" x2="330" y2="283" stroke="#436251" stroke-width="3"/>
       <line x1="260" y1="278" x2="260" y2="288" stroke="#436251" stroke-width="2"/>
       <line x1="330" y1="278" x2="330" y2="288" stroke="#436251" stroke-width="2"/>
-      <text x="295" y="275" text-anchor="middle" font-size="10" fill="#345747">約50m</text>
+      <text x="295" y="275" text-anchor="middle" font-size="10" fill="#345747">約40m</text>
     </svg>`;
   }
 

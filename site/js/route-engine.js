@@ -71,7 +71,19 @@
     const route = result.routes[0];
     const coords = checkFootPath(route.geometry?.coordinates, [start.lat, start.lng], [end.lat, end.lng]);
     const directions = (route.legs || []).flatMap(leg => leg.steps || []).filter(s => !!s.maneuver).map(instruction);
-    return { type: 'walking', paths: [coords], directions, metres: route.distance, seconds: route.duration };
+    const steps = (route.legs || []).flatMap(leg => leg.steps || []).filter(step => !!step.maneuver);
+    const maneuvers = steps.filter(step => {
+      const p = step.maneuver?.location;
+      return Array.isArray(p) && p.length === 2 && Number.isFinite(p[0]) && Number.isFinite(p[1]) &&
+        p[1] >= 34.2 && p[1] <= 34.6 && p[0] >= 132.2 && p[0] <= 132.7;
+    }).map(step => ({
+      type: step.maneuver.type || 'turn',
+      modifier: step.maneuver.modifier || '',
+      name: String(step.name || ''),
+      location: [step.maneuver.location[1], step.maneuver.location[0]],
+      distance: Number.isFinite(step.distance) ? step.distance : null
+    }));
+    return { type: 'walking', paths: [coords], directions, maneuvers, completeManeuvers: maneuvers.length === steps.length, metres: route.distance, seconds: route.duration };
   }
   async function route(segment, places) {
     const key = [segment.from, segment.to, segment.mode].join('|');

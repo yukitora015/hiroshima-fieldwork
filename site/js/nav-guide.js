@@ -252,7 +252,7 @@
     state.marker.addTo(state.map).bindTooltip('選択した現在地（手動）', { permanent: true, direction: 'top', offset: [0, -9] });
     // Map remains north-up: no false heading or GPS claim. Zoom around selected junction.
     state.map.setView(slice.point, 18, { animate: false });
-    FieldworkLocalMap.update(slice,turns);
+    FieldworkLocalMap.update(slice,turns,next ? current.distance : null);
   }
 
   window.FieldworkNavigator = Object.freeze({ reset, setRoute, unavailable, splitAt, turnDiagram, roadAction, selectPoint, addStraightPoints });

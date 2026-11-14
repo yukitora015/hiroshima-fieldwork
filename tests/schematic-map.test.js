@@ -19,6 +19,16 @@ assert.ok(svg.includes('nav-schematic') && svg.includes('テスト駅交番'));
 assert.ok(svg.includes('進行方向 ↑') && svg.includes('選択した現在地'));
 assert.ok(!/rotate\s*\(/.test(svg),'text and icons must be upright');
 assert.ok(svg.includes('#9caaa2') && svg.includes('#087e64'));
+const nearSvg=m.renderSvg(slice,[],[],null,20);
+const farSvg=m.renderSvg(slice,[],[],null,200);
+assert.notEqual(nearSvg,farSvg,'distance changes the display scale');
+for(const rendered of [nearSvg,farSvg]) {
+  const bar=rendered.match(/<line x1="([\d.]+)" y1="283" x2="330"/);
+  const label=rendered.match(/>約(\d+)m<\/text>/);
+  assert.ok(bar&&label);
+  const scale=rendered===nearSvg?m.chooseScale(20):m.chooseScale(200);
+  assert.ok(Math.abs((330-Number(bar[1]))-Number(label[1])*scale)<0.11,'scale bar matches its label');
+}
 svg=m.renderSvg(slice,[],[{...landmark,name:'<script>alert(1)</script>'}]);
 assert.ok(!svg.includes('<script>') && svg.includes('&lt;script&gt;'),'OSM text must be escaped');
 assert.ok(!m.renderSvg(null), 'invalid route is never replaced with a fake line');

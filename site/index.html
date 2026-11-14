@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>広島フィールドワーク｜区間ごとのルート案内</title>
+<meta name="description" content="広島フィールドワークの区間ごとの参考行程。地図は概略・各区間の実ルートは地図アプリで確認。">
+<meta name="robots" content="noindex,nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<style>
+:root{--bg:#f7f6f1;--paper:#fffdfa;--line:#dde4db;--text:#21332d;--muted:#607069;--brand:#1f5c4e;--brand2:#2d7a67;--soft:#e6f1ec;--soft2:#f2f7f5;--accent:#cb7d36;--shadow:0 8px 24px rgba(16,30,22,.06);--radius:22px;--sans:'Noto Sans JP',system-ui,sans-serif}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:linear-gradient(180deg,#f7f6f1 0%,#f4f7f5 100%);color:var(--text);font-family:var(--sans);-webkit-font-smoothing:antialiased;line-height:1.7}
+a{color:var(--brand2)}button{font:inherit}img{max-width:100%}
+.wrap{max-width:1160px;margin:auto;padding:0 20px 64px}
+.hero{padding:28px 0 18px}
+.kicker{font-size:12px;font-weight:800;letter-spacing:.12em;color:var(--brand2)}
+.hero h1{font-size:clamp(28px,4vw,44px);line-height:1.15;margin:6px 0 10px;letter-spacing:-.04em}
+.hero p{margin:0;color:var(--muted);max-width:780px}
+.overview-link{margin-top:14px!important}.overview-link a{font-weight:800;text-underline-offset:4px}
+.fallbackmap{height:100%;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;padding:18px;gap:8px;background:#eef4ef}
+.fallbackmap strong{font-size:15px}.fallbackmap span{font-size:12px;color:var(--muted)}.fallbackmap a{font-weight:700;text-decoration:underline;text-underline-offset:3px}
+.notice{border-left:4px solid #bd7139!important}.notice .emph{font-weight:800;color:#804314}
+
+.notice{margin-top:16px;background:rgba(255,255,255,.78);border:1px solid var(--line);border-radius:18px;padding:14px 16px;font-size:13px;color:var(--muted)}
+.topchips{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}
+.chip{background:var(--paper);border:1px solid var(--line);border-radius:999px;padding:8px 12px;font-size:12px;font-weight:700}
+.tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:18px 0 20px}
+.tab{border:1px solid var(--line);background:rgba(255,255,255,.7);border-radius:18px;padding:14px 16px;text-align:left;cursor:pointer;box-shadow:var(--shadow)}
+.tab strong{display:block;font-size:16px}.tab small{display:block;color:var(--muted);margin-top:2px}
+.tab.active{background:var(--brand);color:#fff;border-color:var(--brand)}.tab.active small{color:#dbece6}
+.grid{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(320px,.8fr);gap:20px;align-items:start}
+.panel{background:rgba(255,255,255,.88);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
+.summary{padding:18px 18px 8px}.summary h2{margin:0 0 6px;font-size:22px;letter-spacing:-.03em}.summary p{margin:0;color:var(--muted)}
+.legend{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.legend span{padding:6px 10px;background:var(--soft2);border-radius:999px;font-size:12px;border:1px solid var(--line)}
+.mapwrap{padding:14px 18px 18px;position:sticky;top:10px}
+.maphead{display:flex;justify-content:space-between;gap:10px;align-items:end;margin-bottom:10px}
+.maphead h3{margin:0;font-size:18px}.maphead p{margin:0;color:var(--muted);font-size:12px}
+#map{height:420px;border-radius:18px;border:1px solid var(--line);overflow:hidden;background:#eef4ef}
+.mapmeta{display:grid;gap:8px;margin-top:12px}
+.mapmeta .card{background:var(--soft2);border:1px solid var(--line);border-radius:16px;padding:12px 14px}
+.mapmeta .card b{display:block;font-size:13px;margin-bottom:3px}.mapmeta .card span{font-size:13px;color:var(--muted)}
+.segment-list{padding:0 18px 18px;display:grid;gap:14px}
+.segment{border:1px solid var(--line);background:var(--paper);border-radius:18px;overflow:hidden;cursor:pointer;transition:.18s ease box-shadow,.18s ease border-color,.18s ease transform}
+.segment:hover{transform:translateY(-1px);box-shadow:0 10px 22px rgba(16,30,22,.06)}
+.segment.active{border-color:var(--brand2);box-shadow:0 0 0 3px rgba(45,122,103,.12)}
+.seghead{padding:15px 16px 12px;display:grid;grid-template-columns:auto 1fr;gap:12px;align-items:start;background:linear-gradient(180deg,#fff 0%,#fbfdfc 100%)}
+.badge{display:grid;place-items:center;width:34px;height:34px;border-radius:999px;background:var(--brand);color:#fff;font-weight:800}
+.segtitle{margin:0;font-size:17px;line-height:1.35}
+.segsub{margin:5px 0 0;font-size:12px;color:var(--muted)}
+.segbody{padding:0 16px 16px}
+.minimap{height:188px;border-radius:16px;border:1px solid var(--line);overflow:hidden;background:#eef4ef;margin-bottom:14px}
+.cols{display:grid;grid-template-columns:1.1fr .9fr;gap:14px}
+.box{background:var(--soft2);border:1px solid var(--line);border-radius:16px;padding:12px 13px}
+.box h4{font-size:13px;margin:0 0 8px}.box ol{margin:0;padding-left:18px}.box li{margin:0 0 6px;font-size:13px}
+.box ul{margin:0;padding-left:16px}.box ul li{font-size:13px;margin:0 0 6px}
+.meta-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+.meta-pill{background:var(--soft);border-radius:14px;padding:10px 10px 9px;border:1px solid #d7e6de}
+.meta-pill b{display:block;font-size:11px;letter-spacing:.04em;color:var(--brand2)}.meta-pill span{display:block;font-size:13px;margin-top:3px;line-height:1.45}
+.actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px}
+.actions a{display:inline-flex;align-items:center;justify-content:center;min-height:42px;padding:0 14px;border-radius:999px;text-decoration:none;font-size:13px;font-weight:800;border:1px solid var(--brand);background:var(--brand);color:#fff}
+.actions a.alt{background:#fff;color:var(--brand)}
+.footer-note{margin-top:22px;padding:16px 18px;border-top:1px solid var(--line);color:var(--muted);font-size:12px}
+.leaflet-container{font-family:var(--sans)!important}
+.route-label{background:#fff;border:1px solid var(--line);padding:4px 8px;border-radius:999px;font-size:12px;font-weight:700;color:var(--brand)}
+@media (max-width:920px){.grid{grid-template-columns:1fr} .mapwrap{position:static} #map{height:300px}}
+@media (max-width:640px){.wrap{padding:0 14px 50px} .tabs{grid-template-columns:1fr} .segment-list{padding:0 12px 14px} .summary{padding:16px 12px 8px} .mapwrap{padding:14px 12px 12px} .seghead{padding:13px 12px 10px} .segbody{padding:0 12px 12px} .cols{grid-template-columns:1fr} .meta-row{grid-template-columns:1fr} .minimap{height:180px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="hero">
+    <div class="kicker">HIROSHIMA FIELDWORK / ROUTE GUIDE</div>
+    <h1>区間ごとのルート案内</h1>
+    <p>各グループの移動を、<strong>1区間ずつ</strong>追える形に整理しました。地図は訪問先の位置関係を示します。詳しい道順は地図アプリで確認してください。</p>
+    <div class="notice"><strong>道順に関する重要な注意：</strong>地図の線は道路形状に沿った確定ルートではなく、訪問先を結ぶ<span class="emph">概略線</span>です。道順は現地・歩行者経路データとの照合が済んでいません。<strong>各区間を移動する前に「Googleマップで徒歩／電車ルートを開く」で実際の経路を確認してください。</strong> 個別の出入口と所要時間は未検証です。</div>
+    <p class="overview-link"><a href="overview.html">全体の予定・合流関係を見る</a></p>
+    <div class="topchips"><div class="chip">2D地図</div><div class="chip">グループ切替</div><div class="chip">目印・参考案内</div><div class="chip">目印つき</div><div class="chip">スマホ表示対応</div></div>
+  </header>
+
+  <nav class="tabs" aria-label="グループ切替">
+    <button class="tab active" data-group="1" aria-pressed="true"><strong>グループ1</strong><small>福屋 → 縮景園 → 県庁 → 本通り</small></button>
+    <button class="tab" data-group="2" aria-pressed="false"><strong>グループ2</strong><small>ekie → 平和資料館 → 県庁 → 本通り</small></button>
+    <button class="tab" data-group="3" aria-pressed="false"><strong>グループ3</strong><small>駅周辺 → 平和資料館 → 本川小学校 → 本通り</small></button>
+  </nav>
+
+  <div class="grid">
+    <section class="panel">
+      <div class="summary">
+        <h2 id="groupTitle"></h2>
+        <p id="groupSummary"></p>
+        <div class="legend"><span>白背景：個別行動</span><span>地図：訪問先をつなぐ概略</span><span>緑のリンク：ライブ地図</span></div>
+      </div>
+      <div id="segmentList" class="segment-list"></div>
+      <div class="footer-note">※移動時間と方向案内は現地検証前の参考情報です。元の行程にあった時刻未定の予定は確定していません。グループ2・3が本川小学校平和資料館まで同行する予定は反映しています。</div>
+    </section>
+
+    <aside class="panel mapwrap">
+      <div class="maphead"><div><h3>選択中の区間地図</h3><p>カードを選択して切替／線は概略です。</p></div></div>
+      <div id="map" aria-label="区間の概略地図"></div>
+      <div class="mapmeta">
+        <div class="card"><b id="mapSegTitle"></b><span id="mapSegMeta"></span></div>
+        <div class="card"><b>ルート確認</b><span id="mapSegVerify"></span></div>
+      </div>
+    </aside>
+  </div>
+</div>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+const PLACES = {"station":{"name":"広島駅","lat":34.3976198,"lng":132.4753631,"address":"広島県広島市南区松原町2","official":"https://www.jr-odekake.net/eki/top?id=0800605"},"fukuya":{"name":"福屋八丁堀本店","lat":34.3935097,"lng":132.4626307,"address":"広島県広島市中区胡町6-26","official":"https://www.fukuya-dept.co.jp/honten/access/"},"shukkeien":{"name":"縮景園","lat":34.4003492,"lng":132.4671298,"address":"広島県広島市中区上幟町2-11","official":"https://shukkeien.jp/access/"},"prefecture":{"name":"広島県庁","lat":34.3965192,"lng":132.459676,"address":"広島県広島市中区基町10-52","official":"https://www.pref.hiroshima.lg.jp/site/accesschousyarenrakusaki/"},"hondori":{"name":"本通り（本通エリア）","lat":34.3935628,"lng":132.4571519,"address":"広島県広島市中区本通周辺","official":"https://www.hondori.or.jp/"},"benbee":{"name":"弁兵衛 大手町店","lat":34.39191096,"lng":132.45615167,"address":"広島県広島市中区大手町2-7-7 1F","official":"https://hiroshima-benbe-ootemachi.owst.jp/"},"reference":{"name":"リファレンス広島小町ビル","lat":34.3891032,"lng":132.4559812,"address":"広島県広島市中区小町3-19","official":"https://re-rental.com/hiroshima/access/"},"cake":{"name":"バッケンモーツァルト CAKE & CAFE 松原町","lat":34.397879,"lng":132.4757374,"address":"広島県広島市南区松原町1-2（ekie内）","official":"https://www.b-mozart.co.jp/?mode=f6"},"omiyage":{"name":"おみやげ街道 エキエ広島","lat":34.397879,"lng":132.4757374,"address":"広島県広島市南区松原町1-2（ekie内）","official":"https://www.sn-hiroshima.co.jp/pages/137/"},"snacks":{"name":"駅付近（土産・軽食）","lat":34.397879,"lng":132.4757374,"address":"広島駅 ekie 周辺","official":"https://www.ekie.jp/"},"museum":{"name":"本川小学校平和資料館","lat":34.39588,"lng":132.45061,"address":"広島県広島市中区本川町1-5-39","official":"https://www.city.hiroshima.lg.jp/atomicbomb-peace/fukko/1021101/1026920/1026921/1020868.html"},"school":{"name":"本川小学校","lat":34.396251,"lng":132.4503758,"address":"広島県広島市中区本川町1-5-39","official":"https://cms.edu.city.hiroshima.jp/weblog/index.php?id=e0899"}};
+const GROUPS = {"1":{"title":"グループ1","summary":"福屋八丁堀本店と縮景園を経由し、15:00ごろ広島県庁でグループ2と合流。その後は本通り→弁兵衛→リファレンス広島小町ビルへ。","segments":[{"from":"station","to":"fukuya","mode":"walking","label":"広島駅 → 福屋八丁堀本店","eta":"所要時間は地図で確認","verify":"出入口や位置は移動前に公式情報と地図で確認してください。","landmarks":[],"steps":["移動前にGoogleマップで最新の経路と所要時間を確認してください。"],"path":[[34.3976198,132.4753631],[34.3935097,132.4626307]]},{"from":"fukuya","to":"shukkeien","mode":"walking","label":"福屋八丁堀本店 → 縮景園","eta":"所要時間は地図で確認","verify":"出入口や位置は移動前に公式情報と地図で確認してください。","landmarks":[],"steps":["移動前にGoogleマップで最新の経路と所要時間を確認してください。"],"path":[[34.3935097,132.4626307],[34.4003492,132.4671298]]},{"from":"shukkeien","to":"prefecture","mode":"walking","label":"縮景園 → 広島県庁","eta":"所要時間は地図で確認","verify":"出入口や位置は移動前に公式情報と地図で確認してください。","landmarks":[],"steps":["移動前にGoogleマップで最新の経路と所要時間を確認してください。"],"path":[[34.4003492,132.4671298],[34.3965192,132.459676]]},{"from":"prefecture","to":"hondori","mode":"walking","label":"広島県庁 → 本通り","eta":"所要時間は地図で確認","verify":"出入口や位置は移動前に公式情報と地図で確認してください。","landmarks":[],"steps":["移動前にGoogleマップで最新の経路と所要時間を確認してください。"],"path":[[34.3965192,132.459676],[34.3935628,132.4571519]]},{"from":"hondori","to":"benbee","mode":"walking","label":"本通り → 弁兵衛 大手町店","eta":"所要時間は地図で確認","verify":"出入口や位置は移動前に公式情報と地図で確認してください。","landmarks":[],"steps":["移動前にGoogleマップで最新の経路と所要時間を確認してください。"],"path":[[34.3935628,132.4571519],[34.39191096,132.45615167]]},{"from":"benbee","to":"reference","mode":"walking","label":"弁兵衛 大手町店 → リファレンス広島小町ビル","eta":"所要時間は地図で確認","verify":"出入口や位置は移動前に公式情報と地図で確認してください。","landmarks":[],"steps":["移動前にGoogleマップで最新の経路と所要時間を確認してください。"],"path":[[34.39191096,132.45615167],[34.3891032,132.4559812]]}]},"2":{"title":"グループ2","summary":"広島駅周辺（ekie）で立ち寄り後、本川小学校平和資料館へ。15:00ごろ広島県庁でグループ1と合流し、その後は本通り→弁兵衛→リファレンス広島小町ビルへ。","segments":[{"from":"station","to":"cake","mode":"walking","label":"広島駅 → バッケンモーツァルト CAKE & CAFE 松原町","eta":"所要時間は地図で確認","verify":"出入口や位置は移動前に公式情報と地図で確認してください。","landmarks":[],"steps":["移動前にGoogleマップで最新の経路と所要時間を確認してください。"],"path":[[34.3976198,132.4753631],[34.397879,132.4757374]]},{"from":"cake","to":"omiyage","mode":"walking","label":"バッケンモーツァルト → おみやげ街道 エキエ広島","eta":"所要時間は地図で確認","verify":"出入口や位置は移動前に公式情報と地図で確認してください。","landmarks":[],"steps":["移動前にGoogleマップで最新の経路と所要時間を確認してください。"],"path":[[34.397879,132.4757374],[34.397879,132.4757374]]},{"from":"omiyage","to":"museum","mode":"transit","label":"おみやげ街道 → 本川小学校平和資料館","eta":"所要時間は地図で確認","verify":"出入口や位置は移動前に公式情報と地図で確認してください。","landmarks":[],"steps":["移動前にGoogleマップで最新の経路と所要時間を確認してください。"],"path":[[34.397879,132.4757374],[34.39588,132.45061]]},{"from":"museum","to":"prefecture","mode":"walking","label":"本川小学校平和資料館 → 広島県庁","eta":"所要時間は地図で確認","verify":"出入口や位置は移動前に公式情報と地図で確認してください。","landmarks":[],"steps":["移動前にGoogleマップで最新の経路と所要時間を確認してください。"],"path":[[34.39588,132.45061],[34.3965192,132.459676]]},{"from":"prefecture","to":"hondori","mode":"walking","label":"広島県庁 → 本通り","eta":"所要時間は地図で確認","verify":"出入口や位置は移動前に公式情報と地図で確認してください。","landmarks":[],"steps":["移動前にGoogleマップで最新の経路と所要時間を確認してください。"],"path":[[34.3965192,132.459676],[34.3935628,132.4571519]]},{"from":"hondori","to":"benbee","mode":"walking","label":"本通り → 弁兵衛 大手町店","eta":"所要時間は地図で確認","verify":"出入口や位置は移動前に公式情報と地図で確認してください。","landmarks":[],"steps":["移動前にGoogleマップで最新の経路と所要時間を確認してください。"],"path":[[34.3935628,132.4571519],[34.39191096,132.45615167]]},{"from":"benbee","to":"reference","mode":"walking","label":"弁兵衛 大手町店 → リファレンス広島小町ビル","eta":"所要時間は地図で確認","verify":"出入口や位置は移動前に公式情報と地図で確認してください。","landmarks":[],"steps":["移動前にGoogleマップで最新の経路と所要時間を確認してください。"],"path":[[34.39191096,132.45615167],[34.3891032,132.4559812]]}]},"3":{"title":"グループ3","summary":"グループ2と一緒に、広島駅→バッケンモーツァルト→おみやげ街道→本川小学校平和資料館を訪問。その後、本川小学校で教頭先生との予定を終え、本通りで全員と合流します。","segments":[{"from":"station","to":"cake","mode":"walking","label":"広島駅 → バッケンモーツァルト CAKE & CAFE 松原町","eta":"所要時間は地図で確認","verify":"出入口や位置は移動前に公式情報と地図で確認してください。","landmarks":[],"steps":["移動前にGoogleマップで最新の経路と所要時間を確認してください。"],"path":[[34.3976198,132.4753631],[34.397879,132.4757374]]},{"from":"cake","to":"omiyage","mode":"walking","label":"バッケンモーツァルト → おみやげ街道 エキエ広島","eta":"所要時間は地図で確認","verify":"出入口や位置は移動前に公式情報と地図で確認してください。","landmarks":[],"steps":["移動前にGoogleマップで最新の経路と所要時間を確認してください。"],"path":[[34.397879,132.4757374],[34.397879,132.4757374]]},{"from":"omiyage","to":"museum","mode":"transit","label":"おみやげ街道 → 本川小学校平和資料館","eta":"所要時間は地図で確認","verify":"出入口や位置は移動前に公式情報と地図で確認してください。","landmarks":[],"steps":["移動前にGoogleマップで最新の経路と所要時間を確認してください。"],"path":[[34.397879,132.4757374],[34.39588,132.45061]]},{"from":"museum","to":"school","mode":"walking","label":"本川小学校平和資料館 → 本川小学校","eta":"所要時間は地図で確認","verify":"出入口や位置は移動前に公式情報と地図で確認してください。","landmarks":[],"steps":["移動前にGoogleマップで最新の経路と所要時間を確認してください。"],"path":[[34.39588,132.45061],[34.396251,132.4503758]]},{"from":"school","to":"hondori","mode":"walking","label":"本川小学校 → 本通り","eta":"所要時間は地図で確認","verify":"出入口や位置は移動前に公式情報と地図で確認してください。","landmarks":[],"steps":["移動前にGoogleマップで最新の経路と所要時間を確認してください。"],"path":[[34.396251,132.4503758],[34.3935628,132.4571519]]},{"from":"hondori","to":"benbee","mode":"walking","label":"本通り → 弁兵衛 大手町店","eta":"所要時間は地図で確認","verify":"出入口や位置は移動前に公式情報と地図で確認してください。","landmarks":[],"steps":["移動前にGoogleマップで最新の経路と所要時間を確認してください。"],"path":[[34.3935628,132.4571519],[34.39191096,132.45615167]]},{"from":"benbee","to":"reference","mode":"walking","label":"弁兵衛 大手町店 → リファレンス広島小町ビル","eta":"所要時間は地図で確認","verify":"出入口や位置は移動前に公式情報と地図で確認してください。","landmarks":[],"steps":["移動前にGoogleマップで最新の経路と所要時間を確認してください。"],"path":[[34.39191096,132.45615167],[34.3891032,132.4559812]]}]}};
+let currentGroup = '1';
+let currentSeg = 0;
+let map, routeLayer, markerLayer, minimaps = new Map();
+
+function gmapsDir(fromId,toId,mode){
+  const f = PLACES[fromId], t = PLACES[toId];
+  return `https://www.google.com/maps/dir/?api=1&origin=${f.lat},${f.lng}&destination=${t.lat},${t.lng}&travelmode=${mode==='transit'?'transit':'walking'}`;
+}
+function escapeHtml(s){return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
+function initMap(){
+  if (typeof L === 'undefined') {
+    document.getElementById('map').innerHTML = '<div class="fallbackmap"><strong>地図ライブラリを読み込めませんでした</strong><span>行程は利用できます。各区間のGoogleマップリンクを開いてください。</span></div>';
+    return;
+  }
+  map = L.map('map', {zoomControl:true, scrollWheelZoom:false}).setView([34.3945,132.4605], 14);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {maxZoom: 19, attribution:'© OpenStreetMap contributors'}).addTo(map);
+  routeLayer = L.layerGroup().addTo(map);
+  markerLayer = L.layerGroup().addTo(map);
+}
+function drawSegmentOnMap(seg){
+  const from = PLACES[seg.from], to = PLACES[seg.to];
+  document.getElementById('mapSegTitle').textContent = seg.label;
+  document.getElementById('mapSegMeta').textContent = `出発：${from.name} ／ 到着：${to.name} ／ ${seg.eta}`;
+  document.getElementById('mapSegVerify').textContent = seg.verify;
+  if (!map || !routeLayer || !markerLayer) {
+    const el = document.getElementById('map');
+    el.innerHTML = '<div class="fallbackmap"><strong>地図の代わりに経路を開く</strong><span>表示できない場合でも下のリンクで案内を確認できます。</span><a target="_blank" rel="noopener noreferrer" href="'+gmapsDir(seg.from,seg.to,seg.mode)+'">Googleマップでこの区間を開く</a></div>';
+    return;
+  }
+  routeLayer.clearLayers(); markerLayer.clearLayers();
+  const latlngs = seg.path.map(p => L.latLng(p[0], p[1]));
+  const line = L.polyline(latlngs, {color:'#1f5c4e', weight:5, opacity:.92, lineJoin:'round'}).addTo(routeLayer);
+  const start = L.circleMarker([from.lat, from.lng], {radius:8,color:'#1f5c4e',weight:3,fillColor:'#fff',fillOpacity:1}).bindTooltip('出発：'+from.name,{direction:'top'}).addTo(markerLayer);
+  const end = L.circleMarker([to.lat, to.lng], {radius:8,color:'#cb7d36',weight:3,fillColor:'#fff',fillOpacity:1}).bindTooltip('到着：'+to.name,{direction:'top'}).addTo(markerLayer);
+  markerLayer.addLayer(L.marker([from.lat, from.lng], {opacity:0}).bindPopup(`<strong>出発</strong><br>${escapeHtml(from.name)}<br><span style="color:#607069">${escapeHtml(from.address)}</span>`));
+  markerLayer.addLayer(L.marker([to.lat, to.lng], {opacity:0}).bindPopup(`<strong>到着</strong><br>${escapeHtml(to.name)}<br><span style="color:#607069">${escapeHtml(to.address)}</span>`));
+  map.fitBounds(line.getBounds().pad(0.26));
+  document.getElementById('mapSegTitle').textContent = seg.label;
+  document.getElementById('mapSegMeta').textContent = `出発：${from.name} ／ 到着：${to.name} ／ ${seg.eta}`;
+  document.getElementById('mapSegVerify').textContent = seg.verify;
+}
+function createMiniMap(elId, seg){
+  const el=document.getElementById(elId);
+  if (!el) return;
+  if(typeof L === 'undefined'){
+    el.innerHTML='<div class="fallbackmap"><strong>出発→到着</strong><span>'+escapeHtml(PLACES[seg.from].name)+' → '+escapeHtml(PLACES[seg.to].name)+'</span><a target="_blank" rel="noopener noreferrer" href="'+gmapsDir(seg.from,seg.to,seg.mode)+'">Googleマップを開く</a></div>';
+    return;
+  }
+  if(minimaps.has(elId)) return;
+  const m = L.map(elId, {zoomControl:false, attributionControl:false, dragging:false, scrollWheelZoom:false, doubleClickZoom:false, boxZoom:false, keyboard:false, tap:false, touchZoom:false});
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {maxZoom: 19}).addTo(m);
+  const latlngs = seg.path.map(p => L.latLng(p[0], p[1]));
+  const poly = L.polyline(latlngs, {color:'#2d7a67',weight:4,opacity:.9}).addTo(m);
+  L.circleMarker(latlngs[0], {radius:6,color:'#1f5c4e',weight:2,fillColor:'#fff',fillOpacity:1}).addTo(m);
+  L.circleMarker(latlngs[latlngs.length-1], {radius:6,color:'#cb7d36',weight:2,fillColor:'#fff',fillOpacity:1}).addTo(m);
+  m.fitBounds(poly.getBounds().pad(0.28));
+  minimaps.set(elId,m);
+}
+function renderSegments(){
+  const group = GROUPS[currentGroup];
+  document.getElementById('groupTitle').textContent = group.title + ' の区間案内';
+  document.getElementById('groupSummary').textContent = group.summary;
+  for (const mini of minimaps.values()) mini.remove();
+  minimaps.clear();
+  const wrap = document.getElementById('segmentList');
+  wrap.innerHTML = '';
+  group.segments.forEach((seg,idx)=>{
+    const from = PLACES[seg.from], to = PLACES[seg.to];
+    const isActive = idx===currentSeg;
+    const card = document.createElement('article');
+    card.className = 'segment'+(isActive?' active':'');
+    card.dataset.index = idx;
+    const miniId = `mini-${currentGroup}-${idx}`;
+    card.innerHTML = `
+      <div class="seghead">
+        <div class="badge">${idx+1}</div>
+        <div>
+          <h3 class="segtitle">${escapeHtml(seg.label)}</h3>
+          <p class="segsub">${escapeHtml(seg.eta)} ・ 移動手段：${seg.mode==='transit'?'電車＋徒歩':'徒歩'}</p>
+        </div>
+      </div>
+      <div class="segbody">
+        <div class="meta-row">
+          <div class="meta-pill"><b>出発</b><span>${escapeHtml(from.name)}</span></div>
+          <div class="meta-pill"><b>到着</b><span>${escapeHtml(to.name)}</span></div>
+          <div class="meta-pill"><b>確認</b><span>${escapeHtml(seg.verify)}</span></div>
+        </div>
+        <div class="minimap" id="${miniId}"></div>
+        <div class="cols">
+          <div class="box"><h4>道順の確認</h4><ol>${seg.steps.map(s=>`<li>${escapeHtml(s)}</li>`).join('')}</ol></div>
+          
+        </div>
+        <div class="actions">
+          <a href="${gmapsDir(seg.from, seg.to, seg.mode)}" target="_blank" rel="noopener noreferrer">Googleマップで実際の経路を確認 ↗</a>
+          <a class="alt" href="${PLACES[seg.to].official}" target="_blank" rel="noopener noreferrer">到着地の公式情報 ↗</a>
+        </div>
+      </div>`;
+    card.addEventListener('click',(e)=>{ if(e.target.closest('a')) return; currentSeg = idx; renderSegments(); document.getElementById(miniId)?.scrollIntoView?.({block:'nearest'}); });
+    wrap.appendChild(card);
+    setTimeout(()=>createMiniMap(miniId, seg), 0);
+  });
+  drawSegmentOnMap(group.segments[currentSeg]);
+}
+
+document.querySelectorAll('.tab').forEach(btn=>btn.addEventListener('click',()=>{
+  document.querySelectorAll('.tab').forEach(x=>{x.classList.remove('active');x.setAttribute('aria-pressed','false')});
+  btn.classList.add('active'); btn.setAttribute('aria-pressed','true');
+  currentGroup = btn.dataset.group;
+  currentSeg = 0;
+  renderSegments();
+}));
+initMap();
+renderSegments();
+</script>
+</body>
+</html>

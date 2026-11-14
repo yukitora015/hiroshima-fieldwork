@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta name="robots" content="noindex,nofollow">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f6f7f4">
+  <meta name="description" content="2026年11月17日の広島フィールドワーク。3グループの訪問先、合流地点、地図をまとめた当日用行程表。">
+  <title>広島フィールドワーク｜11月17日</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700&family=Noto+Serif+JP:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <style>
+  :root{--paper:#f6f7f4;--white:#fff;--ink:#19332e;--muted:#65756e;--moss:#28574e;--moss-2:#376e60;--pale:#e8f1ec;--line:#d5dfd8;--warm:#b37851;--soft-warm:#fbf4ed;--shared:#daeae2;--foc:#1c6b59;--serif:'Noto Serif JP','Yu Mincho',serif;--sans:'Noto Sans JP','Hiragino Kaku Gothic ProN','Yu Gothic',sans}
+  *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.65;-webkit-font-smoothing:antialiased}
+  button,a{touch-action:manipulation}button{font:inherit}a{color:inherit}a:hover{text-decoration-thickness:2px}:focus-visible{outline:3px solid var(--foc);outline-offset:3px}
+  .layout{max-width:1160px;margin:auto;padding:0 26px 70px}.top{padding:26px 0 21px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:flex-start;gap:18px}
+  .eyebrow{font-size:11px;font-weight:700;letter-spacing:.11em;color:var(--moss-2)}.masthead{font-family:var(--serif);font-size:32px;line-height:1.32;letter-spacing:-.045em;font-weight:700;margin:7px 0 5px}
+  .subtitle{margin:0;font-size:13px;color:var(--muted)}.date{display:flex;align-items:flex-end;gap:9px;min-width:123px;padding-top:7px}.date strong{font:600 44px/1 var(--serif);letter-spacing:-.06em}.date small{font-size:11px;color:var(--muted);font-weight:700;line-height:1.35;padding-bottom:2px}
+  .intro{display:grid;grid-template-columns:1fr auto;gap:24px;padding:24px 0 25px;align-items:start}
+  .intro h2{font-size:15px;font-weight:700;margin:0 0 10px}.intro p{max-width:600px;margin:0;font-size:13px;color:var(--muted);line-height:1.9}
+  .joinstrip{display:flex;gap:18px;align-self:stretch;align-items:stretch}
+  .join-item{border-left:2px solid var(--line);padding:0 0 0 11px;min-width:110px}.join-item strong{display:block;font-family:var(--serif);font-size:18px;color:var(--moss)}.join-item span{font-size:11px;display:block;color:var(--muted)}
+  .section-label{font-size:12px;font-weight:700;letter-spacing:.04em;color:var(--muted);margin-bottom:11px}
+  .tabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border-top:1px solid var(--line);border-bottom:1px solid var(--line);margin-bottom:28px}
+  .tab{appearance:none;border:0;border-right:1px solid var(--line);background:transparent;text-align:left;padding:13px 15px 13px 2px;cursor:pointer;position:relative;min-height:67px;display:flex;gap:10px;align-items:center}
+  .tab:last-child{border-right:0;padding-left:15px}.tab:not(:first-child){padding-left:15px}.tab .tab-no{font-family:var(--serif);font-size:28px;line-height:1;color:#9bab9f;min-width:28px}.tab strong{display:block;font-weight:700;font-size:14px}.tab small{display:block;font-size:11px;color:var(--muted);line-height:1.5}.tab[aria-selected="true"] .tab-no{color:var(--moss)}.tab[aria-selected="true"]:after{content:'';height:3px;background:var(--moss);position:absolute;bottom:-2px;left:0;right:0}.tab[aria-selected="true"]{background:#edf3ee}
+  .main-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(330px, 43%);gap:35px;align-items:start}
+  .area-title{display:flex;align-items:baseline;justify-content:space-between;gap:12px;border-bottom:1px solid var(--line);padding-bottom:11px;margin-bottom:20px}
+  .area-title h2{font-size:22px;line-height:1.4;margin:0;font-family:var(--serif);letter-spacing:-.04em}.area-title .meta{font-size:12px;color:var(--muted)}
+  .route-list{padding:0;margin:0;list-style:none}.route-row{display:grid;grid-template-columns:74px 24px minmax(0,1fr);gap:0;position:relative;min-height:95px}
+  .route-row:not(:last-child) .axis:after{content:'';width:1px;position:absolute;top:28px;bottom:-7px;left:11px;background:#c5d3cc}
+  .clock{font-weight:700;font-size:12px;line-height:1.5;padding-top:19px;letter-spacing:-.03em;font-variant-numeric:tabular-nums;white-space:pre-line}.axis{position:relative;padding-top:24px}.axis i{display:block;width:11px;height:11px;position:relative;z-index:1;border-radius:100%;background:var(--white);border:2px solid var(--moss-2);margin:0 0 0 6px}
+  .route-row[data-kind="meet"] .axis i,.route-row[data-kind="all"] .axis i{background:var(--moss);border-color:var(--moss)}
+  .route-row .detail{padding:13px 0 19px 10px;border-bottom:1px solid var(--line);min-width:0}
+  .detail-top{display:flex;flex-wrap:wrap;gap:7px;align-items:baseline;margin-bottom:5px}.detail h3{font-weight:700;font-size:15px;line-height:1.45;margin:0;letter-spacing:-.02em}
+  .kind{font-size:10px;letter-spacing:.02em;white-space:nowrap;color:var(--moss);font-weight:700;padding:2px 6px;background:var(--pale);border-radius:2px}
+  .kind.is-all{color:white;background:var(--moss)}.kind.is-meet{background:var(--shared)}.kind.is-tbd{color:#794d2c;background:var(--soft-warm)}
+  .desc{margin:0;color:var(--muted);font-size:12px;line-height:1.75}.detail-actions{display:flex;align-items:center;gap:15px;margin-top:7px}
+  .maplink{font-size:12px;font-weight:700;color:var(--moss);text-underline-offset:3px;text-decoration:underline}.walk{font-size:11px;color:var(--muted)}
+  .map-col{position:sticky;top:18px}.map-heading{display:flex;align-items:center;justify-content:space-between;padding-bottom:11px}.map-heading h2{font-family:var(--serif);font-size:20px;margin:0}.map-heading p{color:var(--muted);font-size:11px;margin:0}
+  .map-frame{height:410px;background:#e7eeea;position:relative;overflow:hidden;border:1px solid #cad7d0}.map-real{position:absolute;inset:0;z-index:2}.map-fallback{position:absolute;inset:0;z-index:1}
+  .map-note{font-size:11px;line-height:1.75;color:var(--muted);margin:9px 0 16px}
+  .map-actions{display:flex;gap:10px;flex-wrap:wrap}.action-link{min-height:43px;display:inline-flex;align-items:center;justify-content:center;gap:5px;font-weight:700;font-size:12px;border:1px solid var(--moss);padding:9px 15px;text-decoration:none;background:var(--moss);color:white}.action-link.secondary{background:transparent;color:var(--moss)}
+  .place-key{display:grid;gap:0;margin-top:24px;border-top:1px solid var(--line)}.place-key .keyitem{display:grid;grid-template-columns:24px 1fr;gap:8px;align-items:center;border-bottom:1px solid var(--line);padding:8px 0;font-size:12px}.place-key .keynum{font-size:11px;color:var(--moss);font-weight:700}.keyitem .keytext{color:var(--ink)}
+  .notice{margin:35px 0 0;border-top:1px solid var(--line);padding-top:18px;display:grid;grid-template-columns:190px 1fr;gap:20px}.notice h2{font-family:var(--serif);font-size:20px;margin:0}.notice ul{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(3,1fr);gap:16px}.notice li{font-size:12px;color:var(--muted);line-height:1.8}.notice b{font-size:12px;color:var(--ink);display:block;margin-bottom:3px}
+  footer{border-top:1px solid var(--line);margin-top:36px;padding:20px 0;font-size:11px;color:var(--muted);line-height:1.9}footer a{color:var(--moss);text-underline-offset:3px}
+  .leaflet-container{font-family:var(--sans)!important}.leaflet-control-attribution{font-size:9px!important}.leaflet-marker-icon.pin{background:var(--moss);color:white;border:2px solid white;border-radius:50%;display:grid;place-items:center;font-weight:700;font-family:var(--sans);box-shadow:0 1px 5px #0003;font-size:12px}
+  .leaflet-popup-content{font:13px/1.7 var(--sans);min-width:160px}.leaflet-popup-content a{color:var(--moss);font-weight:700}
+  .skip{position:absolute;top:-999px;left:0;background:white;padding:10px;z-index:999}.skip:focus{top:0}
+  @media(max-width:900px){.main-grid{grid-template-columns:1fr}.map-col{position:static;grid-row:1}.map-frame{height:300px}.place-key{display:none}.layout{max-width:680px}.intro{grid-template-columns:1fr}.joinstrip{gap:8px}}
+  @media(max-width:580px){body{font-size:14px}.layout{padding:0 17px 70px}.top{padding:19px 0 17px}.eyebrow{font-size:10px}.masthead{font-size:26px;margin-top:9px}.subtitle{font-size:11px}.date{min-width:auto}.date strong{font-size:35px}.date small{font-size:10px}.intro{padding:18px 0 18px;gap:17px}.intro h2{font-size:14px}.intro p{font-size:12px}.joinstrip{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px}.join-item{padding-left:7px;min-width:0}.join-item strong{font-size:16px}.join-item span{font-size:10px}.tab{padding:12px 6px!important;min-height:63px;gap:5px}.tab .tab-no{font-size:24px;min-width:22px}.tab strong{font-size:12px}.tab small{font-size:9px;line-height:1.45}.tabs{margin-bottom:18px}.map-heading h2{font-size:18px}.map-frame{height:275px}.map-actions a{flex:1}.area-title{margin-top:12px}.area-title h2{font-size:21px}.area-title .meta{font-size:11px}.route-row{grid-template-columns:68px 24px minmax(0,1fr)}.clock{font-size:12px}.detail h3{font-size:15px}.route-row .detail{padding-left:5px}.desc{font-size:12px}.notice{grid-template-columns:1fr;margin-top:27px}.notice h2{font-size:18px}.notice ul{grid-template-columns:1fr;gap:11px}.notice li{border-bottom:1px solid var(--line);padding-bottom:11px}footer{margin-top:24px}}
+  @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+  @media print{.layout{max-width:none}.map-col{position:static}.tabs{display:none}.route-row{break-inside:avoid}a{text-decoration:underline}}
+  </style>
+</head>
+<body>
+<a class="skip" href="#schedule">予定へスキップ</a>
+<div class="layout">
+<p style="margin:12px 0 0;font:700 14px/1.6 sans-serif"><a href="index.html" style="color:#28574e">← 区間ごとのルート案内に戻る</a></p>
+<header class="top">
+  <div><div class="eyebrow">HIROSHIMA / FIELD NOTES</div><h1 class="masthead">広島フィールドワーク</h1><p class="subtitle">3つのグループの行程と、合流する場所。</p></div>
+  <div class="date" aria-label="2026年11月17日 火曜日"><strong>17</strong><small>2026.11<br>TUE</small></div>
+</header>
+<section class="intro" aria-labelledby="intro-heading">
+  <div><h2 id="intro-heading">11:00 広島駅から出発</h2><p>午前は別の訪問先をまわり、午後に合流します。グループを選ぶと、その日の予定と訪問先の地図が切り替わります。</p></div>
+  <div class="joinstrip" aria-label="大事な時刻">
+    <div class="join-item"><strong>15:00</strong><span>県庁で1・2合流</span></div>
+    <div class="join-item"><strong>16:00<span style="display:inline;font-size:10px">以降</span></strong><span>本通りで全員</span></div>
+    <div class="join-item"><strong>18:45</strong><span>最終集合まで</span></div>
+  </div>
+</section>
+<div class="section-label">グループを選択</div>
+<nav class="tabs" role="tablist" aria-label="グループ切替">
+  <button type="button" class="tab" role="tab" id="tab-1" aria-controls="group-content" aria-selected="true" data-group="1"><span class="tab-no">1</span><span><strong>グループ1</strong><small>4人・縮景園など</small></span></button>
+  <button type="button" class="tab" role="tab" id="tab-2" aria-controls="group-content" aria-selected="false" tabindex="-1" data-group="2"><span class="tab-no">2</span><span><strong>グループ2</strong><small>2人・県庁へ</small></span></button>
+  <button type="button" class="tab" role="tab" id="tab-3" aria-controls="group-content" aria-selected="false" tabindex="-1" data-group="3"><span class="tab-no">3</span><span><strong>グループ3</strong><small>2人・小学校へ</small></span></button>
+</nav>
+<div id="group-content" role="tabpanel" aria-labelledby="tab-1" class="main-grid">
+  <main id="schedule" class="schedule-col">
+    <div class="area-title"><h2 id="group-title">グループ1の予定</h2><div class="meta" id="group-count">7地点</div></div>
+    <ol id="route-list" class="route-list" aria-label="訪問順"></ol>
+  </main>
+  <aside class="map-col" id="map-section" aria-labelledby="map-title">
+    <div class="map-heading"><h2 id="map-title">訪問先の地図</h2><p>グループごとに切替</p></div>
+    <div class="map-frame" aria-label="選択中のグループの位置図"><div id="fallback-map" class="map-fallback"></div><div id="map" class="map-real" role="img" aria-label="訪問順の地図"></div></div>
+    <p class="map-note">線は訪問順を示す概略です。実際の道路・電車の経路とは異なります。詳細な道順はGoogleマップで確認してください。外部の経路リンクは一部の経由地のみを含みます。</p>
+    <div class="map-actions"><a class="action-link" id="whole-route" target="_blank" rel="noopener noreferrer" href="https://www.google.com/maps/">主要地点の道順を見る ↗</a><a class="action-link secondary" href="#schedule">予定に戻る ↑</a></div>
+    <div id="map-key" class="place-key" aria-label="地図の凡例"></div>
+  </aside>
+</div>
+<section class="notice" aria-labelledby="notice-title">
+  <h2 id="notice-title">当日の確認事項</h2>
+  <ul><li><b>合流の時刻</b>グループ1・2は15:00から県庁で合流。全員が本通りで合流する正確な時刻は未定。</li><li><b>夕食</b>弁兵衛 大手町店。グループ1・2は17:15開始、グループ3の開始時刻は未定。</li><li><b>地図と移動</b>徒歩時間は提供された計画を転記。実際の移動手段や所要時間は各自で確認してください。</li></ul>
+</section>
+<footer>2026年11月17日（火）｜公開用原案：参加者の氏名は掲載せず、グループ番号のみを表示。<br>
+地図：<a href="https://www.openstreetmap.org/" target="_blank" rel="noopener noreferrer">© OpenStreetMap contributors</a>／<a href="https://leafletjs.com/" target="_blank" rel="noopener noreferrer">Leaflet</a>。地図タイルの表示にはインターネット接続が必要です。</footer>
+</div>
+<script>
+'use strict';
+// Source of schedule data: 2026-11-14 user-provided mobile itinerary. Only data reused, not its design.
+// Geographic coordinates are published approximate point locations; Google Maps links use named destinations.
+const PLACES = {
+  station:{name:'広島駅',lat:34.3976198,lng:132.4753631,q:'広島駅 広島県'},
+  fukuya:{name:'福屋八丁堀本店',lat:34.3935097,lng:132.4626307,q:'福屋八丁堀本店 広島市中区胡町6-26'},
+  shukkeien:{name:'縮景園',lat:34.4003492,lng:132.4671298,q:'縮景園 広島市'},
+  prefecture:{name:'広島県庁',lat:34.3965192,lng:132.459676,q:'広島県庁 広島市中区基町10-52'},
+  hondori:{name:'本通り',lat:34.3935628,lng:132.4571519,q:'本通駅 広島市中区'},
+  benbee:{name:'弁兵衛 大手町店',lat:34.39191096,lng:132.45615167,q:'弁兵衛 大手町店 広島県広島市中区大手町2-7-7'},
+  reference:{name:'リファレンス広島小町ビル',lat:34.3891032,lng:132.4559812,q:'リファレンス広島小町ビル 広島市中区小町3-19'},
+  // The cafe and souvenir shop are located inside ekie; the representative mall coordinate is used for both.
+  ekie:{name:'ekie（カフェ・おみやげ街道）',lat:34.397879,lng:132.4757374,q:'ekie NORTH 広島駅 広島市南区松原町1-2'},
+  museum:{name:'本川小学校平和資料館',lat:34.39588,lng:132.45061,q:'本川小学校平和資料館 広島市中区本川町1-5-39'},
+  school:{name:'本川小学校',lat:34.396251,lng:132.4503758,q:'広島市立本川小学校'}
+};
+const GROUPS = {
+ '1':{title:'グループ1の予定',subtitle:'福屋・縮景園を訪問し、県庁でグループ2と合流',stops:[
+   {p:'station',time:'11:00',title:'広島駅で解散',kind:'start',note:'グループごとに行動開始。',move:'次の福屋まで徒歩7分（計画上）'},
+   {p:'fukuya',time:'12:30〜',title:'福屋八丁堀本店',kind:'single',note:'別館7F。',move:'縮景園まで徒歩12分（計画上）'},
+   {p:'shukkeien',time:'時刻未定',title:'縮景園',kind:'tbd',note:'昼食の場所・時間も未定。',move:'県庁まで徒歩16分（計画上）'},
+   {p:'prefecture',time:'15:00〜',title:'広島県庁でグループ2と合流',kind:'meet',note:'へいわ創造機構ひろしま。グループ2は16:00まで滞在予定。',move:'本通りまで徒歩8分（計画上）'},
+   {p:'hondori',time:'16:00以降',title:'本通りで全員合流',kind:'all',note:'全員の正確な合流時刻は未定。',move:'弁兵衛まで徒歩約8分（計画上）'},
+   {p:'benbee',time:'17:15〜',title:'弁兵衛 大手町店で夕食',kind:'all',note:'グループ1・2の開始予定は17:15。グループ3は未定。',move:'最終集合場所まで徒歩約5分（計画上）'},
+   {p:'reference',time:'18:45まで',title:'リファレンス広島小町ビル',kind:'all',note:'全員の最終集合。'}]},
+ '2':{title:'グループ2の予定',subtitle:'資料館までグループ3と同行し、県庁でグループ1と合流',stops:[
+   {p:'station',time:'11:00',title:'広島駅で解散',kind:'start',note:'ここから本川小学校平和資料館まで、グループ3と同行。',move:'カフェまで徒歩2分（計画上）'},
+   {p:'ekie',time:'11:05–11:45',title:'バッケンモーツァルト',kind:'shared',note:'CAKE＆CAFE 松原町。計画にある店舗名。所在地はekie内の代表地点で表示。',move:'おみやげ街道まで徒歩7分（計画上）'},
+   {p:'ekie',time:'11:55–12:25',title:'おみやげ街道 エキエ広島',kind:'shared',note:'グループ3と同行。ekie NORTH 2階。',move:'資料館まで電車・徒歩16分（計画上）'},
+   {p:'museum',time:'13:00–14:00',title:'本川小学校平和資料館',kind:'shared',note:'ここでグループ3と分かれる。',move:'県庁まで徒歩13分（計画上）'},
+   {p:'prefecture',time:'15:00–16:00',title:'広島県庁でグループ1と合流',kind:'meet',note:'県庁滞在予定：15:00〜16:00。',move:'本通りまで徒歩8分（計画上）'},
+   {p:'hondori',time:'16:00以降',title:'本通りで全員合流',kind:'all',note:'正確な合流時刻は未定。',move:'弁兵衛まで徒歩約8分（計画上）'},
+   {p:'benbee',time:'17:15〜',title:'弁兵衛 大手町店で夕食',kind:'all',note:'グループ3の夕食開始時刻は未定。',move:'集合場所まで徒歩約5分（計画上）'},
+   {p:'reference',time:'18:45まで',title:'リファレンス広島小町ビル',kind:'all',note:'全員の最終集合。'}]},
+ '3':{title:'グループ3の予定',subtitle:'資料館までグループ2と同行し、教頭先生との面談後に本通りへ',stops:[
+   {p:'station',time:'11:00',title:'広島駅で解散',kind:'start',note:'グループ2と同行。',move:'カフェまで徒歩2分（計画上）'},
+   {p:'ekie',time:'11:05–11:45',title:'バッケンモーツァルト',kind:'shared',note:'CAKE＆CAFE 松原町。グループ2と同行。',move:'おみやげ街道まで徒歩7分（計画上）'},
+   {p:'ekie',time:'11:55–12:25',title:'おみやげ街道 エキエ広島',kind:'shared',note:'グループ2と同行。',move:'資料館まで電車・徒歩16分（計画上）'},
+   {p:'museum',time:'13:00–14:00',title:'本川小学校平和資料館',kind:'shared',note:'ここまでグループ2と同行。以降は別行動。',move:'本川小学校へ移動（所要時間未定）'},
+   {p:'school',time:'14:50–15:20',title:'本川小学校・教頭先生と面談',kind:'single',note:'面談は15:20に終了。',move:'本通りまで徒歩（所要時間未定）'},
+   {p:'hondori',time:'15:40頃',title:'本通りへ到着（見込み）',kind:'tbd',note:'この時点では全員合流と限らない。'},
+   {p:'hondori',time:'16:00以降',title:'本通りで全員合流',kind:'all',note:'合流の正確な時刻は未定。',move:'夕食の店舗へ移動（時刻未定）'},
+   {p:'benbee',time:'時刻未定',title:'弁兵衛 大手町店で夕食',kind:'tbd',note:'グループ1・2は17:15開始。グループ3の時刻は要確認。'},
+   {p:'reference',time:'18:45まで',title:'リファレンス広島小町ビル',kind:'all',note:'全員の最終集合。'}]}
+};
+const names={start:'出発',single:'個別行動',shared:'グループ2・3同行',meet:'グループ1・2合流',all:'全員共通',tbd:'時刻未定・見込み'};
+const $ = id => document.getElementById(id);
+const googleSearch=(q)=>'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(q);
+const escapeHtml=(str)=>String(str).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+let active='1',map=null,markerGroup=null,routeLine=null;
+function uniqueStops(stops){const arr=[];for(const s of stops){if(!arr.some(x=>x.p===s.p)) arr.push(s)}return arr}
+function renderTimeline(group){
+ const stops=GROUPS[group].stops;
+ $('group-title').textContent=GROUPS[group].title;
+ $('group-count').textContent=uniqueStops(stops).length+'地点';
+ $('route-list').innerHTML=stops.map((s,i)=>{
+  const suffix=s.kind==='all'?'is-all':s.kind==='meet'||s.kind==='shared'?'is-meet':s.kind==='tbd'?'is-tbd':'';
+  const label=(s.kind==='shared'&&group==='2')||(s.kind==='shared'&&group==='3')?'グループ2・3同行':names[s.kind];
+  return `<li class="route-row" data-kind="${s.kind}"><div class="clock">${escapeHtml(s.time)}</div><span class="axis" aria-hidden="true"><i></i></span><div class="detail"><div class="detail-top"><h3>${escapeHtml(s.title)}</h3><span class="kind ${suffix}">${escapeHtml(label)}</span></div><p class="desc">${escapeHtml(s.note)}</p><div class="detail-actions"><a class="maplink" target="_blank" rel="noopener noreferrer" href="${googleSearch(PLACES[s.p].q)}" aria-label="${escapeHtml(s.title)}をGoogleマップで開く">地図を開く ↗</a>${s.move?`<span class="walk">${escapeHtml(s.move)}</span>`:''}</div></div></li>`;
+ }).join('');
+}
+function renderKey(group){const unique=uniqueStops(GROUPS[group].stops);$('map-key').innerHTML=unique.map((s,i)=>`<div class="keyitem"><span class="keynum">${String(i+1).padStart(2,'0')}</span><span class="keytext">${escapeHtml(PLACES[s.p].name)}</span></div>`).join('')}
+function routeUrl(group){const unique=uniqueStops(GROUPS[group].stops),loc=s=>PLACES[s.p].q; const origin=loc(unique[0]),destination=loc(unique[unique.length-1]);const mids=unique.slice(1,-1).map(loc);
+ // Google Maps only supports a limited number of waypoints on mobile; cap at 3 for consistent URL behavior.
+ // Map inside this page always shows every location. All individual stops have their own exact Google Maps link.
+ const params=new URLSearchParams({api:'1',origin,destination}); if(mids.length)params.set('waypoints',mids.slice(0,3).join('|'));return 'https://www.google.com/maps/dir/?'+params.toString();
+}
+function renderFallback(group){
+ const rows=uniqueStops(GROUPS[group].stops);const pts=rows.map(s=>PLACES[s.p]); const lats=pts.map(x=>x.lat),lngs=pts.map(x=>x.lng);
+ const latMin=Math.min(...lats)-.0015,latMax=Math.max(...lats)+.0015,lngMin=Math.min(...lngs)-.0015,lngMax=Math.max(...lngs)+.0015;
+ const x=p=> 24 + (p.lng-lngMin)/(lngMax-lngMin)*652, y=p=> 30+(latMax-p.lat)/(latMax-latMin)*300;
+ const lines=pts.map(p=>`${x(p).toFixed(1)},${y(p).toFixed(1)}`).join(' ');
+ let pins=pts.map((p,i)=>`<g transform="translate(${x(p).toFixed(1)},${y(p).toFixed(1)})"><circle r="15" fill="#28574e" stroke="#fff" stroke-width="3"/><text text-anchor="middle" y="4.5" font-size="11" font-family="sans-serif" fill="white" font-weight="700">${i+1}</text></g>`).join('');
+ $('fallback-map').innerHTML=`<svg viewBox="0 0 700 360" preserveAspectRatio="xMidYMid meet" role="img" aria-label="訪問先の相対位置を示す概略図" style="width:100%;height:100%;background:#e9f1ec"><path d="M-20 80L720 80M-20 180L720 180M-20 280L720 280M150 0L150 400M355 0L355 400M555 0L555 400" stroke="#d3dfd7" stroke-width="16" opacity=".6" fill="none"/><polyline points="${lines}" fill="none" stroke="#28574e" stroke-width="3" stroke-dasharray="5 8" stroke-linecap="round"/>${pins}<text x="16" y="344" font-size="12" fill="#587269" font-family="sans-serif">概略位置図・地図タイル未読込</text><text x="673" y="24" text-anchor="end" font-size="12" fill="#587269" font-family="sans-serif">N ↑</text></svg>`;
+}
+function renderMap(group){renderFallback(group);renderKey(group);$('whole-route').href=routeUrl(group);
+ if(!window.L) return;
+ if(!map){map=L.map('map',{scrollWheelZoom:false,zoomControl:true});L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',maxZoom:19}).addTo(map)}
+ if(markerGroup)markerGroup.remove();if(routeLine)routeLine.remove();
+ markerGroup=L.layerGroup().addTo(map);const unique=uniqueStops(GROUPS[group].stops),pts=unique.map(s=>[PLACES[s.p].lat,PLACES[s.p].lng]);
+ unique.forEach((s,i)=>{const p=PLACES[s.p];const icon=L.divIcon({className:'pin',html:String(i+1),iconSize:[28,28],iconAnchor:[14,14]});const m=L.marker([p.lat,p.lng],{icon}).addTo(markerGroup);m.bindPopup(`<strong>${escapeHtml(p.name)}</strong><br>${escapeHtml(GROUPS[group].stops.filter(x=>x.p===s.p).map(x=>x.time).join(' / '))}<br><a href="${googleSearch(p.q)}" target="_blank" rel="noopener noreferrer">Googleマップで確認 ↗</a>`)});
+ routeLine=L.polyline(pts,{color:'#28574e',weight:3,dashArray:'5 8',opacity:.83}).addTo(map);
+ setTimeout(()=>{map.invalidateSize();if(pts.length>1)map.fitBounds(L.latLngBounds(pts),{padding:[26,26],maxZoom:15});else map.setView(pts[0],14)},80)
+}
+function selectGroup(group,changeHash=true){if(!GROUPS[group])return;active=group;
+ document.querySelectorAll('.tab').forEach(b=>{const on=b.dataset.group===group;b.setAttribute('aria-selected',String(on));b.tabIndex=on?0:-1});
+ $('group-content').setAttribute('aria-labelledby','tab-'+group); renderTimeline(group);renderMap(group);
+ if(changeHash)history.replaceState(null,'','#group-'+group);
+}
+document.querySelectorAll('.tab').forEach(b=>{b.addEventListener('click',()=>selectGroup(b.dataset.group));b.addEventListener('keydown',e=>{const tabs=['1','2','3'],i=tabs.indexOf(b.dataset.group);if(['ArrowRight','ArrowLeft','Home','End'].includes(e.key)){e.preventDefault();const next=e.key==='Home'?0:e.key==='End'?2:(i+(e.key==='ArrowRight'?1:2))%3;selectGroup(tabs[next]);$('tab-'+tabs[next]).focus()}})});
+window.addEventListener('hashchange',()=>{const id=location.hash.match(/^#group-([123])$/);if(id)selectGroup(id[1],false)});
+const initGroup=(location.hash.match(/^#group-([123])$/)||[])[1]||'1';selectGroup(initGroup,false);
+window.addEventListener('load',()=>{if(window.L)renderMap(active)});
+</script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" defer onload="renderMap(active)"></script>
+</body>
+</html>
